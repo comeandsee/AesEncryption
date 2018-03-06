@@ -8,6 +8,7 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Button Content="Kliknij mnie!" HorizontalAlignment="Left" Margin="619,300,0,0" VerticalAlignment="Top" Width="75"/>
+        <Button Content="Nie klikaj" HorizontalAlignment="Left" Margin="519,300,0,0" VerticalAlignment="Top" Width="75"/>
 
     </Grid>
 </Window>
