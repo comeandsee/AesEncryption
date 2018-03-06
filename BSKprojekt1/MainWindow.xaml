@@ -9,6 +9,7 @@
     <Grid>
         <Button Content="Kliknij mnie!" HorizontalAlignment="Left" Margin="619,300,0,0" VerticalAlignment="Top" Width="75"/>
         <Button Content="Nie klikaj" HorizontalAlignment="Left" Margin="519,300,0,0" VerticalAlignment="Top" Width="75"/>
+        <ProgressBar HorizontalAlignment="Left" Height="10" Margin="356,309,0,0" VerticalAlignment="Top" Width="100" ValueChanged="ProgressBar_ValueChanged"/>
 
     </Grid>
 </Window>
