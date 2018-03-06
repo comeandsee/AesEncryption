@@ -37,7 +37,7 @@ namespace BSKprojekt1
 
             if (openFileDialog.ShowDialog() == true)
             {
-                //InputFileTextBox.
+                InputFileTextBox.Text = openFileDialog.FileName;
             }
         }
     }
