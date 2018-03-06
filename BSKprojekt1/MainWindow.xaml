@@ -7,9 +7,10 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button Content="Kliknij mnie!" HorizontalAlignment="Left" Margin="619,300,0,0" VerticalAlignment="Top" Width="75"/>
-        <Button Content="lol sprawdzam" HorizontalAlignment="Left" Margin="519,300,0,0" VerticalAlignment="Top" Width="75"/>
         <ProgressBar HorizontalAlignment="Left" Height="10" Margin="356,309,0,0" VerticalAlignment="Top" Width="100" ValueChanged="ProgressBar_ValueChanged"/>
+        <TextBox x:Name="InputFileTextBox" HorizontalAlignment="Left" Height="23" Margin="18,49,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="169"/>
+        <Label x:Name="label" Content="Wybierz plik do zaszyfrowania" HorizontalAlignment="Left" Margin="18,10,0,0" VerticalAlignment="Top"/>
+        <Button x:Name="SelectInputFileButton" Content="Wybierz plik" HorizontalAlignment="Left" Margin="205,52,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.315,0.824" Click="SelectInputFileButton_Click"/>
 
     </Grid>
 </Window>
