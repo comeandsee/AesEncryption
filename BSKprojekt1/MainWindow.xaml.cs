@@ -42,22 +42,44 @@ namespace BSKprojekt1
             }
         }
 
-        private void GenerateOutputXML(String outputFileName)
+        private void GenerateOutputXML(String outputFileName, String algorithm, String keySize, String blockSize, String cipherMode, String iv, User[] Users)
         {
-           using(XmlWriter writer = XmlWriter.Create(outputFileName))
+            var settings = new XmlWriterSettings()
             {
-                writer.WriteStartElement("EncryptedFileHeader");
+                Indent = true,
+                IndentChars = "    "
+            };
+
+            using (XmlWriter writer = XmlWriter.Create(outputFileName, settings))
+            {
+                writer.WriteStartElement(Globals.XmlMainElement);
+                writer.WriteElementString(Globals.XmlAlgorithm, algorithm);
+                writer.WriteElementString(Globals.XmlKeySize, keySize);
+                writer.WriteElementString(Globals.XmlBlockSize, blockSize);
+                writer.WriteElementString(Globals.XmlCipherMode, cipherMode);
+                writer.WriteElementString(Globals.XmlIV, iv);
+
+                writer.WriteStartElement(Globals.XmlApprovedUsers);
+                foreach(User user in Users){
+                    writer.WriteStartElement(Globals.XmlUser);
+                    writer.WriteElementString(Globals.XmlEmail, user.Email);
+                    writer.WriteElementString(Globals.XmlSessionKey, user.SessionKey);
+                }
+                
             }
-        }
-
-        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
         }
 
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
+        }
+
+        private void EncodeButton_Click(object sender, RoutedEventArgs e)
+        {
+            String outputFile = OutputFileTextBox.Text;
+            User[] Users = new User[1];
+            Users[0] = new User("p@r.com", "super_secret_session_key");
+            GenerateOutputXML(outputFile, "ECS", "12", "111", "modeX", "wektor", Users);
         }
     }
 }
