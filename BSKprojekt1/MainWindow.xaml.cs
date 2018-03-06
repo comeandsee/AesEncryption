@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml;
 
 namespace BSKprojekt1
 {
@@ -38,6 +39,14 @@ namespace BSKprojekt1
             if (openFileDialog.ShowDialog() == true)
             {
                 InputFileTextBox.Text = openFileDialog.FileName;
+            }
+        }
+
+        private void GenerateOutputXML(String outputFileName)
+        {
+           using(XmlWriter writer = XmlWriter.Create(outputFileName))
+            {
+                writer.WriteStartElement("EncryptedFileHeader");
             }
         }
     }
