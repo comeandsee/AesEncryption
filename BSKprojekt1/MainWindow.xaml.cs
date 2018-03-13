@@ -24,9 +24,46 @@ namespace BSKprojekt1
     /// </summary>
     public partial class MainWindow : Window
     {
+        private List<User> users;
         public MainWindow()
         {
             InitializeComponent();
+            InitializeRecipentsList();
+        }
+
+        //reads recipents from users.xml file and puts them into listbox
+        private void InitializeRecipentsList()
+        {
+            XmlNode userEmail;
+            users = new List<User>();
+            User user;
+            
+            XmlDocument doc = new XmlDocument();
+            doc.Load(Globals.UsersXmlFilePath);
+
+            XmlNode usersNode = doc.DocumentElement.
+                SelectSingleNode("//" + Globals.UsersNode);
+
+            if(usersNode == null)
+            {
+                Console.WriteLine("there is no users node");
+                return;
+            }
+
+            //for each user
+            foreach(XmlNode node in usersNode.ChildNodes)
+            {
+                //userEmail = node.FirstChild;
+                userEmail = node[Globals.XmlEmail];
+                user = new User(userEmail.InnerText);
+                users.Add(user);
+                Console.WriteLine("added " + user.Email);
+
+            }
+
+            //set listbox to display all users
+            RecipentsListBox.ItemsSource = users;
+
         }
 
         private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

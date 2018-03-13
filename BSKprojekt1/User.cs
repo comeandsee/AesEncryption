@@ -17,6 +17,15 @@ namespace BSKprojekt1
             this.SessionKey = SessionKey;
         } 
 
-        
+        public User(String Email)
+        {
+            this.Email = Email;
+        }
+
+        public override string ToString() {
+            return Email;
+        }
+
+
     }
 }
