@@ -23,7 +23,9 @@
             <Label Content="OFB"/>
         </ComboBox>
         <Label x:Name="label1_Copy" Content="Wybierz rodzaj szyfrowania:" HorizontalAlignment="Left" Margin="18,145,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="188"/>
-        <Button x:Name="EncodeButton" Content="Szyfruj" HorizontalAlignment="Left" Margin="272,266,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.315,0.824"  Grid.Column="1" Click="EncodeButton_Click"/>
+        <Button x:Name="EncodeButton" Content="Szyfruj" HorizontalAlignment="Left" Margin="30,247,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.315,0.824" Click="EncodeButton_Click" Grid.ColumnSpan="2"/>
+        <TextBlock x:Name="textBlock1" Grid.Column="1" HorizontalAlignment="Left" Margin="272,128,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="70" Width="367"/>
+        <TextBlock x:Name="textBlock2" Grid.Column="1" HorizontalAlignment="Left" Margin="272,234,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top" Height="70" Width="367"/>
 
     </Grid>
 </Window>

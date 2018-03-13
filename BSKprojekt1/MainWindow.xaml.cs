@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -76,10 +77,26 @@ namespace BSKprojekt1
 
         private void EncodeButton_Click(object sender, RoutedEventArgs e)
         {
-            String outputFile = OutputFileTextBox.Text;
+            string original = "hello my name is me";
+            using(Aes myAes = Aes.Create())
+            {
+                byte[] IV;
+                byte[] encrypted = Encryption.EncryptToBytes(original, myAes.Key, myAes.Mode, myAes.BlockSize, out IV);
+                string result = System.Text.Encoding.UTF8.GetString(encrypted);
+
+                textBlock1.Text = result;
+
+                string decrypted = Encryption.DecryptStringFromBytes(encrypted, myAes.Key, myAes.Mode, myAes.BlockSize, IV);
+
+                textBlock2.Text = decrypted;
+
+            }
+
+            /*String outputFile = OutputFileTextBox.Text;
             User[] Users = new User[1];
             Users[0] = new User("p@r.com", "super_secret_session_key");
             GenerateOutputXML(outputFile, "ECS", "12", "111", "modeX", "wektor", Users);
+        */
         }
     }
 }
