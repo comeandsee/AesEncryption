@@ -27,6 +27,7 @@
         <TextBlock x:Name="resultTextBlock" HorizontalAlignment="Left" Margin="32,290,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="24" Width="155" Grid.ColumnSpan="2"/>
         <ListBox x:Name="RecipentsListBox" SelectionMode="Multiple" HorizontalAlignment="Left" Height="106" VerticalAlignment="Top" Width="313" Grid.Column="1" Margin="329,128,0,0"/>
         <Label x:Name="label1_Copy1" Content="Wybierz odbiorców pliku" HorizontalAlignment="Left" Margin="329,94,0,0" VerticalAlignment="Top" Width="188" Grid.Column="1"/>
+        <Button x:Name="Text_button" Content="DoSth" HorizontalAlignment="Left" Margin="329,314,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.315,0.824" Click="DoSth_Click" Grid.Column="1"/>
 
     </Grid>
 </Window>

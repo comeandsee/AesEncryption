@@ -131,8 +131,9 @@ namespace BSKprojekt1
             using (Aes myAes = Aes.Create())
             {
                 byte[] IV;
-                Encryption.EncryptToBytes(inputFilePath, pathToOutFile, myAes.Key, myAes.Mode, myAes.BlockSize, out IV);
-                Encryption.DecryptStringFromBytes(pathToOutFile, decodedFileName, myAes.Key, myAes.Mode, myAes.BlockSize, IV);
+                
+                Encryption.EncryptFromFile(inputFilePath, pathToOutFile, myAes.Key, myAes.Mode, myAes.BlockSize, out IV);
+                //Encryption.DecryptToFile(pathToOutFile, decodedFileName, myAes.Key, myAes.Mode, myAes.BlockSize, IV);
             }
             resultTextBlock.Text = "operacja zakończona";
 
@@ -141,6 +142,11 @@ namespace BSKprojekt1
             Users[0] = new User("p@r.com", "super_secret_session_key");
             GenerateOutputXML(outputFile, "ECS", "12", "111", "modeX", "wektor", Users);
         */
+        }
+
+        private void DoSth_Click(object sender, RoutedEventArgs e)
+        {
+            Encryption.GenerateKeyPairRSA(out string a, out string b);
         }
     }
 }

@@ -12,7 +12,7 @@ namespace BSKprojekt1
     {
         //based on https://msdn.microsoft.com/pl-pl/library/system.security.cryptography.aes(v=vs.110).aspx
         //encrypts file from path srcFileName to file in path destFileName
-        public static void EncryptToBytes(string srcFileName, string destFileName, 
+        public static void EncryptFromFile(string srcFileName, string destFileName, 
             byte[] key, CipherMode mode, int blockSize, out byte[] IV)
         {
             using(Aes aesAlg = Aes.Create())
@@ -59,7 +59,7 @@ namespace BSKprojekt1
             }
         }
 
-        public static void DecryptStringFromBytes(string encodedFileName, string decodedFileName, byte[] key, CipherMode mode, int blockSize, byte[] IV)
+        public static void DecryptToFile(string encodedFileName, string decodedFileName, byte[] key, CipherMode mode, int blockSize, byte[] IV)
         {
             using(Aes aesAlg = Aes.Create())
             {
@@ -109,6 +109,39 @@ namespace BSKprojekt1
 
             }
 
+        }
+
+        //todo not sure if that's what we meant (there is no entry generator value for instance)
+        public static byte[] GenerateSessionKey()
+        {
+            byte[] sessionKey;
+            using(Aes aes = Aes.Create())
+            {
+                aes.GenerateKey();
+                sessionKey = (aes.Key).ToArray();
+            }
+
+            return sessionKey;
+        }
+
+        //based on: https://stackoverflow.com/questions/1307204/how-to-generate-unique-public-and-private-key-via-rsa
+        public static void GenerateKeyPairRSA(out string publicKey, out string privateKey)
+        {
+            using(var rsa = new RSACryptoServiceProvider(1024))
+            {
+                try
+                {
+                    //todo this creates some xml's, get key values from it or change everything
+                    publicKey = rsa.ToXmlString(false);
+                    privateKey = rsa.ToXmlString(true);
+
+                    File.WriteAllText("C:\\Users\\Zbigniew\\Desktop\\keyz2.xml", privateKey);
+                }
+                finally
+                {
+                    rsa.PersistKeyInCsp = false;
+                }
+            }
         }
     }
 }
