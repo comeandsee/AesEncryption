@@ -53,7 +53,6 @@ namespace BSKprojekt1
             //for each user
             foreach(XmlNode node in usersNode.ChildNodes)
             {
-                //userEmail = node.FirstChild;
                 userEmail = node[Globals.XmlEmail];
                 user = new User(userEmail.InnerText);
                 users.Add(user);
@@ -63,11 +62,6 @@ namespace BSKprojekt1
 
             //set listbox to display all users
             RecipentsListBox.ItemsSource = users;
-
-        }
-
-        private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
 
         }
 
