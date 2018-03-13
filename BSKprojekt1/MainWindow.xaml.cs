@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
+using System.IO;
 
 namespace BSKprojekt1
 {
@@ -91,14 +92,18 @@ namespace BSKprojekt1
                 return;
             }
 
-            string decodedFileName = "C:\\Users\\Zbigniew\\Desktop\\result.txt";
+            string outDirectory = System.IO.Path.GetDirectoryName(inputFilePath);
+            string pathToOutFile =  outDirectory + "\\" + outputFileName;
+           
+            string decodedFileName = outDirectory + "\\result.txt";
 
             using (Aes myAes = Aes.Create())
             {
                 byte[] IV;
-                Encryption.EncryptToBytes(inputFilePath, outputFileName, myAes.Key, myAes.Mode, myAes.BlockSize, out IV);
-                Encryption.DecryptStringFromBytes(outputFileName, decodedFileName, myAes.Key, myAes.Mode, myAes.BlockSize, IV);
+                Encryption.EncryptToBytes(inputFilePath, pathToOutFile, myAes.Key, myAes.Mode, myAes.BlockSize, out IV);
+                Encryption.DecryptStringFromBytes(pathToOutFile, decodedFileName, myAes.Key, myAes.Mode, myAes.BlockSize, IV);
             }
+            resultTextBlock.Text = "operacja zakończona";
 
             /*String outputFile = OutputFileTextBox.Text;
             User[] Users = new User[1];
