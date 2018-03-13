@@ -77,19 +77,27 @@ namespace BSKprojekt1
 
         private void EncodeButton_Click(object sender, RoutedEventArgs e)
         {
-            string original = "hello my name is me";
-            using(Aes myAes = Aes.Create())
+            string inputFilePath = InputFileTextBox.Text;
+            if (string.IsNullOrEmpty(inputFilePath)){
+                //tODO more complex error function
+                Console.WriteLine("wrong input file path");
+                return;
+            }
+
+            string outputFileName = OutputFileTextBox.Text;
+            if (string.IsNullOrEmpty(outputFileName))
+            {
+                Console.WriteLine("wrong out file name");
+                return;
+            }
+
+            string decodedFileName = "C:\\Users\\Zbigniew\\Desktop\\result.txt";
+
+            using (Aes myAes = Aes.Create())
             {
                 byte[] IV;
-                byte[] encrypted = Encryption.EncryptToBytes(original, myAes.Key, myAes.Mode, myAes.BlockSize, out IV);
-                string result = System.Text.Encoding.UTF8.GetString(encrypted);
-
-                textBlock1.Text = result;
-
-                string decrypted = Encryption.DecryptStringFromBytes(encrypted, myAes.Key, myAes.Mode, myAes.BlockSize, IV);
-
-                textBlock2.Text = decrypted;
-
+                Encryption.EncryptToBytes(inputFilePath, outputFileName, myAes.Key, myAes.Mode, myAes.BlockSize, out IV);
+                Encryption.DecryptStringFromBytes(outputFileName, decodedFileName, myAes.Key, myAes.Mode, myAes.BlockSize, IV);
             }
 
             /*String outputFile = OutputFileTextBox.Text;
