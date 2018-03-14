@@ -124,17 +124,12 @@ namespace BSKprojekt1
             }
 
             string outDirectory = System.IO.Path.GetDirectoryName(inputFilePath);
-            string pathToOutFile =  outDirectory + "\\" + outputFileName;
+            string outputFilePath =  outDirectory + "\\" + outputFileName;
            
             string decodedFileName = outDirectory + "\\result.txt";
 
-            using (Aes myAes = Aes.Create())
-            {
-                byte[] IV;
-                
-                Encryption.EncryptFromFile(inputFilePath, pathToOutFile, myAes.Key, myAes.Mode, myAes.BlockSize, out IV);
-                //Encryption.DecryptToFile(pathToOutFile, decodedFileName, myAes.Key, myAes.Mode, myAes.BlockSize, IV);
-            }
+            Encryption.GenerateEncodedFile(inputFilePath, outputFilePath);
+
             resultTextBlock.Text = "operacja zakończona";
 
             /*String outputFile = OutputFileTextBox.Text;
@@ -146,7 +141,7 @@ namespace BSKprojekt1
 
         private void DoSth_Click(object sender, RoutedEventArgs e)
         {
-            Encryption.TestRSAEncrypt();
+            //EncryptionHelper.TestRSAEncrypt();
             //Encryption.GenerateSessionKey();
             //Encryption.GenerateKeyPairRSA(out string a, out string b);
         }
