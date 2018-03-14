@@ -117,6 +117,7 @@ namespace BSKprojekt1
             byte[] sessionKey;
             using(Aes aes = Aes.Create())
             {
+                aes.KeySize = 128;
                 aes.GenerateKey();
                 sessionKey = (aes.Key).ToArray();
             }
@@ -180,23 +181,21 @@ namespace BSKprojekt1
         //as a test- generates session key, encrypts and decrypts it
         public static void TestRSAEncrypt()
         {
-
             GenerateKeyPairRSA(out string publicKey, out string privateKey);
             byte[] sessionKey = GenerateSessionKey();
-            Console.WriteLine(" len: " + sessionKey.Length);
-            //Console.WriteLine("sessionKey " + Encoding.Default.GetString(sessionKey) + " len: " + sessionKey.Length);
-
-            string beforeEncryption = Encoding.UTF8.GetString(sessionKey);
-            //Console.WriteLine("before encryption " + beforeEncryption);
+            Console.WriteLine("fresh key len: " + sessionKey.Length);
+            
+            string beforeEncryptionString = Convert.ToBase64String(sessionKey);
+            Console.WriteLine("before encryption " + beforeEncryptionString);
 
             //encryption
             string encryptedKey = EncryptSessionKeyToString(sessionKey, publicKey);
-           // Console.WriteLine("encrypted data " + encryptedKey);
+            Console.WriteLine("encrypted data " + encryptedKey);
 
             //decryption
             byte[] decryptedData = DecryptSessionKeyFromString(encryptedKey, privateKey);
-           // Console.WriteLine(" len: " + decryptedData.Length);
-            // Console.WriteLine("decrypted data " + Encoding.Default.GetString(decryptedData) + " len: " + decryptedData.Length);
+            Console.WriteLine("decrypted data " + Convert.ToBase64String(decryptedData) + " len: " + decryptedData.Length);
+          
         }
 
         //returns encrypted session key with given public key (public key is a string in xml form)
@@ -204,24 +203,19 @@ namespace BSKprojekt1
         public static string EncryptSessionKeyToString(byte[] sessionKey, string publicKey)
         {
             byte[] encryptedKeyBytes = RSAEncrypt(sessionKey, publicKey);
-            string encryptedKey = Encoding.UTF8.GetString(encryptedKeyBytes);
+            string encryptedKeyString = Convert.ToBase64String(encryptedKeyBytes);
 
-            return encryptedKey;
+            return encryptedKeyString;
         }
 
         //given encrypted session key (a string from header of encrypted file) 
         //and a private key (string in xml form)
         //returns session key in byte array
-        public static byte[] DecryptSessionKeyFromString(string encryptedSessionKey, string privateKey)
+        public static byte[] DecryptSessionKeyFromString(string encryptedKey, string privateKey)
         {
-            //Console.WriteLine("encrypted key " + encryptedSessionKey);
-
-            byte[] dataToDecrypt = Encoding.UTF8.GetBytes(encryptedSessionKey);
-
-            Console.WriteLine("dataTodecrypt len " + dataToDecrypt.Length);
-
-            byte[] sessionKey = RSADecrypt(dataToDecrypt, privateKey);
-            return sessionKey;
+            byte[] encryptedKeyBytes = Convert.FromBase64String(encryptedKey);
+            byte[] decryptedKeyBytes = RSADecrypt(encryptedKeyBytes, privateKey);
+            return decryptedKeyBytes;
         }
 
         //based on: https://msdn.microsoft.com/en-us/library/system.security.cryptography.rsacryptoserviceprovider(v=vs.110).aspx
