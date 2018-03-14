@@ -120,9 +120,10 @@ namespace BSKprojekt1
                 aes.GenerateKey();
                 sessionKey = (aes.Key).ToArray();
             }
-
+            Console.WriteLine("dlugosc klucza "+ sessionKey.Length + " , klucz "+ sessionKey.ToString());
             return sessionKey;
         }
+
 
         //based on: https://stackoverflow.com/questions/1307204/how-to-generate-unique-public-and-private-key-via-rsa
         public static void GenerateKeyPairRSA(out string publicKey, out string privateKey)
@@ -135,13 +136,116 @@ namespace BSKprojekt1
                     publicKey = rsa.ToXmlString(false);
                     privateKey = rsa.ToXmlString(true);
 
-                    File.WriteAllText("C:\\Users\\Zbigniew\\Desktop\\keyz2.xml", privateKey);
+                    
+                    //File.WriteAllText("C:\\Users\\Zbigniew\\Desktop\\keyz2.xml", privateKey);
                 }
                 finally
                 {
                     rsa.PersistKeyInCsp = false;
                 }
             }
+        }
+
+        //TODO- getting the key from publicKeys.xml file (that doesn't exist yet)
+        //gets public key of user with userEmail
+        //returns it as xml string
+        public static string GetUsersPublicKey(string userEmail)
+        {/*
+            XmlDocument doc = new XmlDocument();
+            doc.Load(Globals.UsersXmlFilePath);
+
+            XmlNode usersNode = doc.DocumentElement.
+                SelectSingleNode("//" + Globals.UsersNode);
+
+            if (usersNode == null)
+            {
+                Console.WriteLine("there is no users node");
+                return;
+            }
+
+            //for each user
+            foreach (XmlNode node in usersNode.ChildNodes)
+            {
+                userEmail = node[Globals.XmlEmail];
+                user = new User(userEmail.InnerText);
+                users.Add(user);
+                Console.WriteLine("added " + user.Email);
+
+            }*/
+            string userPublicKey = null;
+            return userPublicKey;
+        }
+
+
+        public static void TestRSAEncrypt()
+        {
+            GenerateKeyPairRSA(out string publicKey, out string privateKey);
+
+            byte[] dataToEncrypt = Encoding.ASCII.GetBytes("dzien dobry misiu");
+
+            //encryption
+            byte[] encryptedData = RSAEncrypt(dataToEncrypt, publicKey);
+            Console.WriteLine("encrypted data " + Encoding.Default.GetString(encryptedData));
+
+            //decryption
+            byte[] decryptedData = RSADecrypt(encryptedData, privateKey);
+            Console.WriteLine("decrypted data " + Encoding.Default.GetString(decryptedData));
+
+
+        }
+
+        //based on: https://msdn.microsoft.com/en-us/library/system.security.cryptography.rsacryptoserviceprovider(v=vs.110).aspx
+        public static byte[] RSAEncrypt(byte[] dataToEncrypt, string publicKey)
+        {
+            byte[] encryptedData = null;
+
+            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+            {
+                try
+                {
+                    
+                    rsa.FromXmlString(publicKey);
+                    encryptedData = rsa.Encrypt(dataToEncrypt, false);
+
+                }
+                catch (CryptographicException e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
+                finally
+                {
+                    rsa.PersistKeyInCsp = false;
+                }
+            }
+
+            return encryptedData;
+        }
+
+        //based on: https://msdn.microsoft.com/en-us/library/system.security.cryptography.rsacryptoserviceprovider(v=vs.110).aspx
+        public static byte[] RSADecrypt(byte[] dataToDecrypt, string privateKey)
+        {
+            byte[] decryptedData = null;
+
+            using (RSACryptoServiceProvider rsa = new RSACryptoServiceProvider())
+            {
+                try
+                {
+
+                    rsa.FromXmlString(privateKey);
+                    decryptedData = rsa.Decrypt(dataToDecrypt, false);
+
+                }
+                catch (CryptographicException e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
+                finally
+                {
+                    rsa.PersistKeyInCsp = false;
+                }
+            }
+
+            return decryptedData;
         }
     }
 }

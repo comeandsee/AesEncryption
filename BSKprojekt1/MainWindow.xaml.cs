@@ -146,7 +146,9 @@ namespace BSKprojekt1
 
         private void DoSth_Click(object sender, RoutedEventArgs e)
         {
-            Encryption.GenerateKeyPairRSA(out string a, out string b);
+            Encryption.TestRSAEncrypt();
+            //Encryption.GenerateSessionKey();
+            //Encryption.GenerateKeyPairRSA(out string a, out string b);
         }
     }
 }
