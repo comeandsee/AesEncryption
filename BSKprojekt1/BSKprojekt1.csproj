@@ -57,6 +57,8 @@
     <Compile Include="Encryption.cs" />
     <Compile Include="EncryptionHelper.cs" />
     <Compile Include="User.cs" />
+    <Compile Include="UsersManagement.cs" />
+    <Compile Include="XmlHelpers.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

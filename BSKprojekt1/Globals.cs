@@ -18,9 +18,15 @@ namespace BSKprojekt1
         public static String XmlUser = "User";
         public static String XmlEmail = "Email";
         public static String XmlSessionKey = "SessionKey";
+        public static String XmlPublicKey = "PublicKey";
+
 
         public static String UsersXmlFilePath = "users.xml";
         public static String UsersNode = "Users";
+
+        public static String Algorithm = "AES";
+
+        public static int blockSize = 128;
         
     }
 }

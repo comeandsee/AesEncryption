@@ -6,26 +6,21 @@ using System.Threading.Tasks;
 
 namespace BSKprojekt1
 {
-    class User
+    public class User
     {
         public String Email;
-        public String SessionKey;
+        public String publicRSAKey;
 
-        public User(String Email, String SessionKey)
+        public User(String Email, String publicRSAKey)
         {
             this.Email = Email;
-            this.SessionKey = SessionKey;
-        } 
-
-        public User(String Email)
-        {
-            this.Email = Email;
+            this.publicRSAKey = publicRSAKey;
         }
+
 
         public override string ToString() {
             return Email;
         }
-
-
+        
     }
 }

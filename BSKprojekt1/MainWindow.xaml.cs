@@ -28,43 +28,17 @@ namespace BSKprojekt1
         public MainWindow()
         {
             InitializeComponent();
-            InitializeRecipentsList();
+
+            PrepareAppUsers();
         }
 
-        //reads recipents from users.xml file and puts them into listbox
-        private void InitializeRecipentsList()
+        private void PrepareAppUsers()
         {
-            XmlNode userEmail;
-            users = new List<User>();
-            User user;
-            
-            XmlDocument doc = new XmlDocument();
-            doc.Load(Globals.UsersXmlFilePath);
-
-            XmlNode usersNode = doc.DocumentElement.
-                SelectSingleNode("//" + Globals.UsersNode);
-
-            if(usersNode == null)
-            {
-                Console.WriteLine("there is no users node");
-                return;
-            }
-
-            //for each user
-            foreach(XmlNode node in usersNode.ChildNodes)
-            {
-                userEmail = node[Globals.XmlEmail];
-                user = new User(userEmail.InnerText);
-                users.Add(user);
-                Console.WriteLine("added " + user.Email);
-
-            }
-
-            //set listbox to display all users
+            users = UsersManagement.GetUsersListFromFile("dummy file name");
+            //set listbox to display all users (as recipents of encrypted data)
             RecipentsListBox.ItemsSource = users;
-
         }
-
+        
         private void SelectInputFileButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -74,69 +48,68 @@ namespace BSKprojekt1
                 InputFileTextBox.Text = openFileDialog.FileName;
             }
         }
-
-        private void GenerateOutputXML(String outputFileName, String algorithm, String keySize, String blockSize, String cipherMode, String iv, User[] Users)
-        {
-            var settings = new XmlWriterSettings()
-            {
-                Indent = true,
-                IndentChars = "    "
-            };
-
-            using (XmlWriter writer = XmlWriter.Create(outputFileName, settings))
-            {
-                writer.WriteStartElement(Globals.XmlMainElement);
-                writer.WriteElementString(Globals.XmlAlgorithm, algorithm);
-                writer.WriteElementString(Globals.XmlKeySize, keySize);
-                writer.WriteElementString(Globals.XmlBlockSize, blockSize);
-                writer.WriteElementString(Globals.XmlCipherMode, cipherMode);
-                writer.WriteElementString(Globals.XmlIV, iv);
-
-                writer.WriteStartElement(Globals.XmlApprovedUsers);
-                foreach(User user in Users){
-                    writer.WriteStartElement(Globals.XmlUser);
-                    writer.WriteElementString(Globals.XmlEmail, user.Email);
-                    writer.WriteElementString(Globals.XmlSessionKey, user.SessionKey);
-                }
-                
-            }
-        }
-
+        
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
         }
 
-        private void EncodeButton_Click(object sender, RoutedEventArgs e)
+        private bool GetSelectedValuesFromGUI(out string inputFilePath,
+            out string outputFilePath, out string cipherMode, out List<User> recipents)
         {
-            string inputFilePath = InputFileTextBox.Text;
-            if (string.IsNullOrEmpty(inputFilePath)){
+            bool readingAllOK = true;
+
+            //retrieve input file and output file name
+            inputFilePath = InputFileTextBox.Text;
+            if (string.IsNullOrEmpty(inputFilePath))
+            {
                 //tODO more complex error function
                 Console.WriteLine("wrong input file path");
-                return;
+                readingAllOK = false;
             }
 
             string outputFileName = OutputFileTextBox.Text;
             if (string.IsNullOrEmpty(outputFileName))
             {
                 Console.WriteLine("wrong out file name");
-                return;
+                readingAllOK = false;
+
             }
 
             string outDirectory = System.IO.Path.GetDirectoryName(inputFilePath);
-            string outputFilePath =  outDirectory + "\\" + outputFileName;
-           
+            outputFilePath = outDirectory + "\\" + outputFileName;
+
             string decodedFileName = outDirectory + "\\result.txt";
 
-            Encryption.GenerateEncodedFile(inputFilePath, outputFilePath);
+            //retrieve cipher mode
+            cipherMode = "ECB";
+            //TODO ^
 
-            resultTextBlock.Text = "operacja zakończona";
+            //retrieve selected recipents from listbox
+            //TODO- now it's all users
+            recipents = new List<User>(users);
 
-            /*String outputFile = OutputFileTextBox.Text;
-            User[] Users = new User[1];
-            Users[0] = new User("p@r.com", "super_secret_session_key");
-            GenerateOutputXML(outputFile, "ECS", "12", "111", "modeX", "wektor", Users);
-        */
+            return readingAllOK;
+        }
+
+        private void EncodeButton_Click(object sender, RoutedEventArgs e)
+        {
+            string inputFilePath, outputFilePath, cipherMode;
+            List<User> recipents;
+
+            bool correctInput = GetSelectedValuesFromGUI(out inputFilePath, out outputFilePath, out cipherMode, out recipents);
+            if (correctInput)
+            {
+                Encryption.GenerateEncodedFile(inputFilePath, outputFilePath, Globals.blockSize, cipherMode, recipents);
+                resultTextBlock.Text = "operacja zakończona";
+
+            }
+            else
+            {
+                //TODO error message about incorrect input
+            }
+
+            
         }
 
         private void DoSth_Click(object sender, RoutedEventArgs e)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -9,15 +10,68 @@ namespace BSKprojekt1
 {
     public static class Encryption
     {
-        public static void GenerateEncodedFile(string inputFilePath, string outputFilePath)
+        public static void GenerateEncodedFile(string inputFilePath, string outputFilePath, int blockSize, string cipherMode, List<User> recipents)
         {
+            int keySizeBits = 128; 
+           
+            //generate session file
+            byte[] sessionKey = EncryptionHelper.GenerateSessionKey(keySizeBits);
+
+            //get a dictionary with recipent emails and their encrypted session keys
+            Dictionary<string, string> recipentsKeysDict = Encryption.GetRecipentsEncryptedSessionKeys(sessionKey, recipents);
+
+            //initialization vector is set in AesEncryptFromFile and then put into header
+            byte[] IV = null;
+
+            string tempEncodedFile = "tempEncoded.xml";
+
+            //encrypting input file and saving it in destined out file
             using (Aes myAes = Aes.Create())
             {
-                byte[] IV;
-
-                EncryptionHelper.AesEncryptFromFile(inputFilePath, outputFilePath, myAes.Key, myAes.Mode, myAes.BlockSize, out IV);
+                EncryptionHelper.AesEncryptFromFile(inputFilePath, tempEncodedFile, myAes.Key, myAes.Mode, myAes.BlockSize, out IV);
                 //Encryption.DecryptToFile(pathToOutFile, decodedFileName, myAes.Key, myAes.Mode, myAes.BlockSize, IV);
             }
+
+            string ivString = Convert.ToBase64String(IV);
+
+            string tempFileWithHeader = "tempHeader.xml";
+            XmlHelpers.GenerateXMLHeader(tempFileWithHeader, Globals.Algorithm,
+                keySizeBits.ToString(), blockSize.ToString(), cipherMode, ivString, recipentsKeysDict);
+
+            MergeHeaderAndEncodedContentIntoOutputFile(outputFilePath, tempFileWithHeader, tempEncodedFile);
+
+        }
+
+        //combines contents from headerFile and encodedFile to outputFile 
+        private static void MergeHeaderAndEncodedContentIntoOutputFile(string outputFile, string headerFile, string encodedFile)
+        {
+
+            using (Stream destStream = File.Create(outputFile))
+            {
+                using (Stream srcStream = File.OpenRead(headerFile))
+                {
+                    srcStream.CopyTo(destStream);
+                }
+                using (Stream srcStream = File.OpenRead(encodedFile))
+                {
+                    srcStream.CopyTo(destStream);
+                }
+            }
+            
+        }
+
+        private static Dictionary<string,string> GetRecipentsEncryptedSessionKeys(byte[] sessionKey, List<User> recipents)
+        {
+            Dictionary<string, string> recipentsKeysDict = new Dictionary<string, string>();
+            string encryptedKey;
+
+            foreach(User recipent in recipents)
+            {
+                encryptedKey = EncryptionHelper.EncryptSessionKeyToString(sessionKey, recipent.publicRSAKey);
+                recipentsKeysDict.Add(recipent.Email, encryptedKey);
+            }
+
+            return recipentsKeysDict;
         }
     }
 }
