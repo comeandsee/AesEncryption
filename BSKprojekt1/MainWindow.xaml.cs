@@ -118,5 +118,17 @@ namespace BSKprojekt1
             //Encryption.GenerateSessionKey();
             //Encryption.GenerateKeyPairRSA(out string a, out string b);
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        
     }
 }
