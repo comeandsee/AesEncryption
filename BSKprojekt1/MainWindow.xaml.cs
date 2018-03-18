@@ -121,23 +121,6 @@ namespace BSKprojekt1
 
             
         }
-
-        private void DoSth_Click(object sender, RoutedEventArgs e)
-        {
-            //EncryptionHelper.TestRSAEncrypt();
-            //Encryption.GenerateSessionKey();
-            //Encryption.GenerateKeyPairRSA(out string a, out string b);
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-
-        }
     
         private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
@@ -163,6 +146,11 @@ namespace BSKprojekt1
             MessageBox.Show("All Done!");
             EncryptionProgress.Value = 0;
             ProgressTextBlock.Text = "";
+        }
+
+        private void DecodeButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

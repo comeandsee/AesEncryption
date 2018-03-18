@@ -11,39 +11,70 @@
         <TabControl TabStripPlacement="Top" Margin="0,0,9.6,0" RenderTransformOrigin="0.467,0.501">
             <TabItem Header="Szyfruj">
                 <Grid>
-                    <TextBox x:Name="InputFileTextBox" HorizontalAlignment="Left" Height="23" Margin="18,58,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="638" Grid.ColumnSpan="2"/>
-                    <Label x:Name="label" Content="Wybierz plik do zaszyfrowania" HorizontalAlignment="Left" Margin="18,23,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
-                    <Button x:Name="SelectInputFileButton" Content="Wybierz plik" HorizontalAlignment="Left" Margin="674,58,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="1.637,0.63" Click="SelectInputFileButton_Click"/>
-                    <TextBox x:Name="OutputFileTextBox" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="23" Margin="18,117,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="188"/>
-                    <Label x:Name="label1" Content="Wybierz nazwę pliku wynikowego" HorizontalAlignment="Left" Margin="18,86,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="188"/>
-                    <ComboBox Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="18,176,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ComboBox_SelectionChanged">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="32*"/>
+                        <ColumnDefinition Width="747*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox x:Name="InputFileTextBox" HorizontalAlignment="Left" Height="23" Margin="5,58,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="638" Grid.ColumnSpan="2"/>
+                    <Label x:Name="label" Content="Wybierz plik do zaszyfrowania" HorizontalAlignment="Left" Margin="5,23,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <Button x:Name="SelectInputFileButton" Content="Wybierz plik" HorizontalAlignment="Left" Margin="641,58,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="1.637,0.63" Click="SelectInputFileButton_Click" Grid.Column="1"/>
+                    <TextBox x:Name="OutputFileTextBox" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="23" Margin="5,117,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="188"/>
+                    <Label x:Name="label1" Content="Wybierz nazwę pliku wynikowego" HorizontalAlignment="Left" Margin="5,86,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="188"/>
+                    <ComboBox Grid.ColumnSpan="2" HorizontalAlignment="Left" Margin="5,176,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ComboBox_SelectionChanged">
                         <Label Content="ECB"/>
                         <Label Content="CBC"/>
                         <Label Content="CFB"/>
                         <Label Content="OFB"/>
                     </ComboBox>
-                    <Label x:Name="label1_Copy" Content="Wybierz rodzaj szyfrowania:" HorizontalAlignment="Left" Margin="18,145,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="188"/>
-                    <Button x:Name="EncodeButton" Content="Szyfruj" HorizontalAlignment="Left" Margin="18,247,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="-0.171,0.604" Click="EncodeButton_Click"/>
-                    <ListBox x:Name="RecipentsListBox" SelectionMode="Multiple" HorizontalAlignment="Left" Height="106" VerticalAlignment="Top" Width="313" Grid.Column="1" Margin="329,128,0,0"/>
-                    <Label x:Name="label1_Copy1" Content="Wybierz odbiorców pliku" HorizontalAlignment="Left" Margin="329,94,0,0" VerticalAlignment="Top" Width="188" Grid.Column="1"/>
-                    <Button x:Name="Text_button" Content="DoSth" HorizontalAlignment="Left" Margin="329,314,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.315,0.824" Click="DoSth_Click" Grid.Column="1"/>
-                    <ProgressBar Name="EncryptionProgress" HorizontalAlignment="Left" Height="10" Margin="18,286,0,0" VerticalAlignment="Top" Width="100" />
-                    <TextBlock Name="ProgressTextBlock" HorizontalAlignment="Left" Margin="18,301,0,0" TextWrapping="Wrap" Text="Status" VerticalAlignment="Top" RenderTransformOrigin="-1.238,3.744"/>
+                    <Label x:Name="label1_Copy" Content="Wybierz rodzaj szyfrowania:" HorizontalAlignment="Left" Margin="5,145,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="188"/>
+                    <Button x:Name="EncodeButton" Content="Szyfruj" HorizontalAlignment="Left" Margin="5,247,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="-0.171,0.604" Click="EncodeButton_Click" Grid.ColumnSpan="2"/>
+                    <ListBox x:Name="RecipentsListBox" SelectionMode="Multiple" HorizontalAlignment="Left" Height="106" VerticalAlignment="Top" Width="313" Grid.Column="1" Margin="403,117,0,0"/>
+                    <Label x:Name="label1_Copy1" Content="Wybierz odbiorców pliku" HorizontalAlignment="Left" Margin="403,86,0,0" VerticalAlignment="Top" Width="188" Grid.Column="1" RenderTransformOrigin="0.677,0.457"/>
+                    <ProgressBar Name="EncryptionProgress" HorizontalAlignment="Left" Height="10" Margin="5,286,0,0" VerticalAlignment="Top" Width="100" Grid.ColumnSpan="2" />
+                    <TextBlock Name="ProgressTextBlock" HorizontalAlignment="Left" Margin="5,301,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" RenderTransformOrigin="-1.238,3.744"/>
 
                 </Grid>
 
             </TabItem>
             <TabItem Header="Deszyfruj">
                 <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="15*"/>
+                        <ColumnDefinition Width="764*"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="InputFileTextBoxDecryption" HorizontalAlignment="Left" Height="23" Margin="5,58,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="638" Grid.ColumnSpan="2"/>
+                    <Label x:Name="labelDecryption" Content="Wybierz plik do odszyfrowania" HorizontalAlignment="Left" Margin="5,23,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2"/>
+                    <Button x:Name="SelectInputFileButtonDecryptio" Content="Wybierz plik" HorizontalAlignment="Left" Margin="650.1,58,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="1.637,0.63" Click="SelectInputFileButton_Click" Grid.Column="1"/>
+                    <TextBox x:Name="OutputFileTextBoxDecryption" Grid.ColumnSpan="2" HorizontalAlignment="Left" Height="23" Margin="5,117,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="188"/>
+                    <Label x:Name="labelDecryption2" Content="Wybierz nazwę pliku wynikowego" HorizontalAlignment="Left" Margin="5,86,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Width="188"/>
+                    <Button x:Name="DecryptionButton" Content="Deszyfruj" HorizontalAlignment="Left" Margin="5,158,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="-0.171,0.604" Click="DecodeButton_Click" Grid.ColumnSpan="2"/>
+                    <ListBox x:Name="DecryptionRecipentsListBox" SelectionMode="Multiple" HorizontalAlignment="Left" Height="106" VerticalAlignment="Top" Width="313" Margin="411.8,117,0,0" Grid.Column="1" RenderTransformOrigin="0.546,0.801"/>
+                    <Label x:Name="labelDecryption3" Content="Wybierz siebie z odbiorców pliku" HorizontalAlignment="Left" Margin="411.8,86,0,0" VerticalAlignment="Top" Width="188" Grid.Column="1"/>
+                    <ProgressBar Name="DecryptionProgress" HorizontalAlignment="Left" Height="10" Margin="5,195,0,0" VerticalAlignment="Top" Width="100" Grid.ColumnSpan="2" />
+                    <TextBlock Name="DecryptionTextBlock" HorizontalAlignment="Left" Margin="5,301,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" RenderTransformOrigin="-1.238,3.744"/>
 
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Security" >
+            <TabItem Header="Register" >
                 <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="118*"/>
+                        <RowDefinition Height="273*"/>
+                    </Grid.RowDefinitions>
+                    <Label x:Name="labelRegistration2" Content="Wypełnij formularz, aby sie zarejestrować:"  HorizontalAlignment="Left" Margin="45,8,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.5,-0.355"/>
+                    <Label x:Name="labelRegistration" Content="Podaj emaila"  HorizontalAlignment="Left" Margin="45,34,0,0" VerticalAlignment="Top"/>
+                    <TextBox x:Name="TextBoxRegistrationEmail" HorizontalAlignment="Left" Height="23" Margin="45,64,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="188"/>
+                    <Label x:Name="labelRegistration1" Content="Podaj haslo"  HorizontalAlignment="Left" Margin="45,87,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.581,-0.09"/>
+                    <TextBox x:Name="TextBoxRegistrationPassword" HorizontalAlignment="Left" Height="23" Margin="45,9.6,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="188" RenderTransformOrigin="0.505,3.343" Grid.Row="1"/>
+                    <ListBox x:Name="RecipentsListBoxRegister" SelectionMode="Multiple" HorizontalAlignment="Left" Height="106" VerticalAlignment="Top" Width="313" Margin="412,117,0,0" RenderTransformOrigin="0.546,0.801" Grid.RowSpan="2"/>
+                    <Label x:Name="labelRegister" Content="Użytkownicy" HorizontalAlignment="Left" Margin="412,86,0,0" VerticalAlignment="Top" Width="188"/>
+                    <Button x:Name="RegisterButton" Content="Rejestruj ! " HorizontalAlignment="Left" Margin="45,59.6,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" RenderTransformOrigin="-0.089,0.818"/>
 
                 </Grid>
             </TabItem>
+
         </TabControl>
     </Grid>
 
