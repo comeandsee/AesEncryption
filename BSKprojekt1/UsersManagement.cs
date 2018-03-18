@@ -9,6 +9,7 @@ namespace BSKprojekt1
 {
     public static class UsersManagement
     {
+        public static List<User> users = new List<User>();
         //reads xml file with structure 
         //<User> 
         //  <Email> </Email>
@@ -18,7 +19,6 @@ namespace BSKprojekt1
         //todo create that file and read from it! it's dummy data for now
         public static List<User> GetUsersListFromFile(string usersAndKeysXmlFilePath)
         {
-            List<User> users = new List<User>();
 
             string publicKey, privateKey;
             EncryptionHelper.GenerateKeyPairRSA(out publicKey, out privateKey);
@@ -26,7 +26,7 @@ namespace BSKprojekt1
 
             EncryptionHelper.GenerateKeyPairRSA(out publicKey, out privateKey);
             users.Add(new User("m@r.com", publicKey));
-            
+
             /*XmlNode userEmail, userPublicKey;
             List<User> users = new List<User>();
             User user;
@@ -57,6 +57,13 @@ namespace BSKprojekt1
             */
             return users;
 
+        }
+
+        public static void AddUser(String email, String password)
+        {
+            string publicKey, privateKey;
+            EncryptionHelper.GenerateKeyPairRSA(out publicKey, out privateKey);
+            users.Add(new User(email, publicKey));
         }
     }
 }

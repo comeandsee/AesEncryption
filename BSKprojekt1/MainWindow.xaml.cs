@@ -38,6 +38,9 @@ namespace BSKprojekt1
         {
             users = UsersManagement.GetUsersListFromFile("dummy file name");
             //set listbox to display all users (as recipents of encrypted data)
+
+
+
             RecipentsListBox.ItemsSource = users;
             RecipentsListBoxDecryption.ItemsSource = users;
             RecipentsListBoxRegister.ItemsSource = users;
@@ -140,6 +143,36 @@ namespace BSKprojekt1
             return readingAllOK;
         }
 
+        private bool GetSelectedValuesFromGUIRegister(out string email,
+           out string password, out List<User> recipents)
+        {
+            bool readingAllOK = true;
+
+            //retrieve input file and output file name
+            email = TextBoxRegistrationEmail.Text;
+            if (string.IsNullOrEmpty(email))
+            {
+               
+                //to do lepsze sprawdzanie
+                Console.WriteLine("wrong email");
+                readingAllOK = false;
+            }
+
+            password = userPassword.Password;
+          //  Console.WriteLine("uwaga hasło : " + password);
+            if (string.IsNullOrEmpty(password))
+            {
+                Console.WriteLine("the password must contain letters ");
+                readingAllOK = false;
+
+            }
+
+            //retrieve selected recipents from listbox
+            //TODO- now it's all users
+            recipents = new List<User>(users);
+    
+            return readingAllOK;
+        }
         private void EncodeButton_Click(object sender, RoutedEventArgs e)
         {
             // progress bar config
@@ -157,7 +190,7 @@ namespace BSKprojekt1
             if (correctInput)
             {
                 Encryption.GenerateEncodedFile(inputFilePath, outputFilePath, Globals.blockSize, cipherMode, recipents);
-                //resultTextBlock.Text = "operacja zakończona";
+                resultTextBlock.Text = "operacja zakończona";
                
             }
             else
@@ -185,6 +218,28 @@ namespace BSKprojekt1
             if (correctInput)
             {
                 //to do DESZYFROWANIE
+                resultTextBlockDecryption.Text = "to jeszcze do zrobienia bardzo";
+            }
+            else
+            {
+                //TODO error message about incorrect input
+            }
+
+        }
+
+        private void RegisterButton_Click(object sender, RoutedEventArgs e)
+        {
+            string email, password;
+            List<User> recipents;
+          //  password = (sender as PasswordBox).Password;
+            bool correctInput = GetSelectedValuesFromGUIRegister(out email, out password, out recipents);
+            if (correctInput)
+            {
+                //to do 
+
+                UsersManagement.AddUser(email, password);
+                PrepareAppUsers();
+                resultTextBlockRegister.Text = "Zostałeś zarejestrowany, dziękujemy ! Tak na prawde nie xd";
             }
             else
             {
