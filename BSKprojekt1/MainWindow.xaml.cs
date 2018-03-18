@@ -52,7 +52,17 @@ namespace BSKprojekt1
                 InputFileTextBox.Text = openFileDialog.FileName;
             }
         }
-        
+
+        private void SelectInputFileButtonDecryption_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                InputFileTextBoxDecryption.Text = openFileDialog.FileName;
+            }
+        }
+
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
 
@@ -96,6 +106,40 @@ namespace BSKprojekt1
             return readingAllOK;
         }
 
+        private bool GetSelectedValuesFromGUIDecryption(out string inputFilePath,
+            out string outputFilePath,  out List<User> recipents)
+        {
+            bool readingAllOK = true;
+
+            //retrieve input file and output file name
+            inputFilePath = InputFileTextBoxDecryption.Text;
+            if (string.IsNullOrEmpty(inputFilePath))
+            {
+                //tODO more complex error function
+                Console.WriteLine("wrong input file path");
+                readingAllOK = false;
+            }
+
+            string outputFileName = OutputFileTextBoxDecryption.Text;
+            if (string.IsNullOrEmpty(outputFileName))
+            {
+                Console.WriteLine("wrong out file name");
+                readingAllOK = false;
+
+            }
+
+            string outDirectory = System.IO.Path.GetDirectoryName(inputFilePath);
+            outputFilePath = outDirectory + "\\" + outputFileName;
+
+            string decodedFileName = outDirectory + "\\result.txt";
+
+            //retrieve selected recipents from listbox
+            //TODO- now it's all users
+            recipents = new List<User>(users);
+
+            return readingAllOK;
+        }
+
         private void EncodeButton_Click(object sender, RoutedEventArgs e)
         {
             // progress bar config
@@ -123,7 +167,32 @@ namespace BSKprojekt1
 
             
         }
-    
+
+        private void DecodeButton_Click(object sender, RoutedEventArgs e)
+        {
+            // progress bar config
+            BackgroundWorker worker1 = new BackgroundWorker();
+            worker1.RunWorkerCompleted += worker_RunWorkerCompletedDecrytpion;
+            worker1.WorkerReportsProgress = true;
+            worker1.DoWork += worker_DoWorkDecrytpion;     // tu trzeba zmienic zeby ten progres szedl inaczej xd
+            worker1.ProgressChanged += worker_ProgressChangedDecrytpion;
+            worker1.RunWorkerAsync();
+
+            string inputFilePath, outputFilePath;
+            List<User> recipents;
+
+            bool correctInput = GetSelectedValuesFromGUIDecryption(out inputFilePath, out outputFilePath, out recipents);
+            if (correctInput)
+            {
+                //to do DESZYFROWANIE
+            }
+            else
+            {
+                //TODO error message about incorrect input
+            }
+
+        }
+
         private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             EncryptionProgress.Value = e.ProgressPercentage;
@@ -137,7 +206,7 @@ namespace BSKprojekt1
             for (int i = 0; i < 10; i++)
             {
                 Thread.Sleep(10);
-                worker.ReportProgress((i + 1) * 10, String.Format("Processing Iteration {0}.", i + 2));
+                worker.ReportProgress((i + 1) * 10, String.Format("Processing  {0}.", i + 2));
             }
 
             worker.ReportProgress(100, "Done Processing.");
@@ -150,10 +219,32 @@ namespace BSKprojekt1
             ProgressTextBlock.Text = "";
         }
 
-        private void DecodeButton_Click(object sender, RoutedEventArgs e)
+        private void worker_ProgressChangedDecrytpion(object sender, ProgressChangedEventArgs e)
         {
-
+            DecryptionProgress.Value = e.ProgressPercentage;
+            DecryptionTextBlock.Text = (string)e.UserState;
         }
+
+        private void worker_DoWorkDecrytpion(object sender, DoWorkEventArgs e)
+        {
+            var worker = sender as BackgroundWorker;
+            worker.ReportProgress(0, String.Format("Processing 1."));
+            for (int i = 0; i < 10; i++)
+            {
+                Thread.Sleep(10);
+                worker.ReportProgress((i + 1) * 10, String.Format("Processing  {0}.", i + 2));
+            }
+
+            worker.ReportProgress(100, "Done Processing.");
+        }
+
+        private void worker_RunWorkerCompletedDecrytpion(object sender, RunWorkerCompletedEventArgs e)
+        {
+            MessageBox.Show("All Done!");
+            DecryptionProgress.Value = 0;
+            DecryptionTextBlock.Text = "";
+        }
+
     }
 }
 
