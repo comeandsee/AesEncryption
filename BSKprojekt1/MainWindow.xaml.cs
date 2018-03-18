@@ -16,6 +16,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Xml;
 using System.IO;
+using System.ComponentModel;
+using System.Threading;
 
 namespace BSKprojekt1
 {
@@ -94,15 +96,23 @@ namespace BSKprojekt1
 
         private void EncodeButton_Click(object sender, RoutedEventArgs e)
         {
+            // progress bar config
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+            worker.WorkerReportsProgress = true;
+            worker.DoWork += worker_DoWork;     // tu trzeba zmienic zeby ten progres szedl inaczej xd
+            worker.ProgressChanged += worker_ProgressChanged;
+            worker.RunWorkerAsync();
+
             string inputFilePath, outputFilePath, cipherMode;
-            List<User> recipents;
+            List<User> recipents; 
 
             bool correctInput = GetSelectedValuesFromGUI(out inputFilePath, out outputFilePath, out cipherMode, out recipents);
             if (correctInput)
             {
                 Encryption.GenerateEncodedFile(inputFilePath, outputFilePath, Globals.blockSize, cipherMode, recipents);
-                resultTextBlock.Text = "operacja zakończona";
-
+                //resultTextBlock.Text = "operacja zakończona";
+               
             }
             else
             {
@@ -128,7 +138,32 @@ namespace BSKprojekt1
         {
 
         }
+    
+        private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            EncryptionProgress.Value = e.ProgressPercentage;
+            ProgressTextBlock.Text = (string)e.UserState;
+        }
 
-        
+        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            var worker = sender as BackgroundWorker;
+            worker.ReportProgress(0, String.Format("Processing 1."));
+            for (int i = 0; i < 10; i++)
+            {
+                Thread.Sleep(10);
+                worker.ReportProgress((i + 1) * 10, String.Format("Processing Iteration {0}.", i + 2));
+            }
+
+            worker.ReportProgress(100, "Done Processing.");
+        }
+
+        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            MessageBox.Show("All Done!");
+            EncryptionProgress.Value = 0;
+            ProgressTextBlock.Text = "";
+        }
     }
 }
+
