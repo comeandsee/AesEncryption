@@ -39,6 +39,8 @@ namespace BSKprojekt1
             users = UsersManagement.GetUsersListFromFile("dummy file name");
             //set listbox to display all users (as recipents of encrypted data)
             RecipentsListBox.ItemsSource = users;
+            RecipentsListBoxDecryption.ItemsSource = users;
+            RecipentsListBoxRegister.ItemsSource = users;
         }
         
         private void SelectInputFileButton_Click(object sender, RoutedEventArgs e)
