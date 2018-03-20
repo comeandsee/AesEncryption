@@ -28,7 +28,7 @@ namespace BSKprojekt1
                 ICryptoTransform encryptor = aesAlg.CreateEncryptor();
 
                 //based on: https://stackoverflow.com/questions/9237324/encrypting-decrypting-large-files-net
-                using (FileStream destFileStream = new FileStream(destFileName, FileMode.CreateNew, 
+                using (FileStream destFileStream = new FileStream(destFileName, FileMode.Create, 
                     FileAccess.Write, FileShare.None))
                 {
                     using (CryptoStream cryptoStream = new CryptoStream(destFileStream, encryptor, CryptoStreamMode.Write))

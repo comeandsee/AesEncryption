@@ -199,7 +199,7 @@ namespace BSKprojekt1
  
             //get values from the user (from gui)
             bool correctInput = GetSelectedValuesFromGUI(out string inputFilePath, out string outputFilePath, 
-              out string fileExtension, out string cipherMode, out List<User> recipents);
+              out string cipherMode, out string fileExtension,  out List<User> recipents);
             if (correctInput)
             {
                 Encryption.GenerateEncodedFile(inputFilePath, outputFilePath, Globals.blockSize, cipherMode, fileExtension, recipents);
