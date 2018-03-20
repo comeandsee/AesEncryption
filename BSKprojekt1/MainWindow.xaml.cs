@@ -66,10 +66,7 @@ namespace BSKprojekt1
             }
         }
 
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
+    
 
         private bool GetSelectedValuesFromGUI(out string inputFilePath,
             out string outputFilePath, out string cipherMode, out string fileExtension, out List<User> recipents)
@@ -87,7 +84,6 @@ namespace BSKprojekt1
 
             //get input file extension
             fileExtension= System.IO.Path.GetExtension(inputFilePath);
-            Console.WriteLine("extension : " + fileExtension);
 
             //get output file name
             string outputFileName = OutputFileTextBox.Text;
@@ -98,19 +94,31 @@ namespace BSKprojekt1
 
             }
 
-            string outDirectory = System.IO.Path.GetDirectoryName(inputFilePath);
-            outputFilePath = outDirectory + "\\" + outputFileName;
+            if (string.IsNullOrEmpty(inputFilePath))
+            {
+                Console.WriteLine("wrong input file path");
+                outputFilePath = "error";
+                readingAllOK = false;
+            }
+            else
+            {
+                string outDirectory = System.IO.Path.GetDirectoryName(inputFilePath);
+                outputFilePath = outDirectory + "\\" + outputFileName;
 
-            string decodedFileName = outDirectory + "\\result.txt";
-
+            }
+                        
             //retrieve cipher mode
-            cipherMode = "ECB";
-            //TODO ^
+            cipherMode = cipherModeComboBox.Text;
+            if (string.IsNullOrEmpty(cipherMode))
+            {
+                Console.WriteLine("wrong cipher mode");
+                readingAllOK = false;
+            }
 
             //retrieve selected recipents from listbox
-            //TODO- now it's all users
-            recipents = new List<User>(users);
-
+            System.Collections.IList items = RecipentsListBox.SelectedItems;
+            recipents = items.Cast<User>().ToList();
+           
             return readingAllOK;
         }
 
@@ -189,6 +197,7 @@ namespace BSKprojekt1
             worker.RunWorkerAsync();
 
  
+            //get values from the user (from gui)
             bool correctInput = GetSelectedValuesFromGUI(out string inputFilePath, out string outputFilePath, 
               out string fileExtension, out string cipherMode, out List<User> recipents);
             if (correctInput)

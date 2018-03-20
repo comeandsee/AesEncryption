@@ -23,7 +23,7 @@
                     <Button x:Name="SelectInputFileButton" Content="Wybierz plik" HorizontalAlignment="Left" Margin="541.7,58,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="1.637,0.63" Click="SelectInputFileButton_Click" Grid.Column="3"/>
                     <TextBox x:Name="OutputFileTextBox" Grid.ColumnSpan="4" HorizontalAlignment="Left" Height="23" Margin="5,117,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="188"/>
                     <Label x:Name="label1" Content="Wybierz nazwę pliku wynikowego" HorizontalAlignment="Left" Margin="5,86,0,0" VerticalAlignment="Top" Grid.ColumnSpan="4" Width="188"/>
-                    <ComboBox Grid.ColumnSpan="3" HorizontalAlignment="Left" Margin="5,176,0,0" VerticalAlignment="Top" Width="120" SelectionChanged="ComboBox_SelectionChanged">
+                    <ComboBox x:Name="cipherModeComboBox" Grid.ColumnSpan="3" HorizontalAlignment="Left" Margin="5,176,0,0" VerticalAlignment="Top" Width="120" >
                         <Label Content="ECB"/>
                         <Label Content="CBC"/>
                         <Label Content="CFB"/>
