@@ -14,6 +14,7 @@ namespace BSKprojekt1
         public static String XmlBlockSize = "BlockSize";
         public static String XmlCipherMode = "CipherMode";
         public static String XmlIV = "IV";
+        public static String XmlExtension = "FileExtension";
         public static String XmlApprovedUsers = "ApprovedUsers";
         public static String XmlUser = "User";
         public static String XmlEmail = "Email";

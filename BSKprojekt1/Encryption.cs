@@ -10,7 +10,7 @@ namespace BSKprojekt1
 {
     public static class Encryption
     {
-        public static void GenerateEncodedFile(string inputFilePath, string outputFilePath, int blockSize, string cipherMode, List<User> recipents)
+        public static void GenerateEncodedFile(string inputFilePath, string outputFilePath, int blockSize, string cipherMode, string fileExtension, List<User> recipents)
         {
             int keySizeBits = 128; 
            
@@ -36,7 +36,7 @@ namespace BSKprojekt1
 
             string tempFileWithHeader = "tempHeader.xml";
             XmlHelpers.GenerateXMLHeader(tempFileWithHeader, Globals.Algorithm,
-                keySizeBits.ToString(), blockSize.ToString(), cipherMode, ivString, recipentsKeysDict);
+                keySizeBits.ToString(), blockSize.ToString(), cipherMode, ivString, recipentsKeysDict, fileExtension);
 
             MergeHeaderAndEncodedContentIntoOutputFile(outputFilePath, tempFileWithHeader, tempEncodedFile);
 
@@ -60,7 +60,7 @@ namespace BSKprojekt1
             
         }
 
-        private static Dictionary<string,string> GetRecipentsEncryptedSessionKeys(byte[] sessionKey, List<User> recipents)
+        public static Dictionary<string,string> GetRecipentsEncryptedSessionKeys(byte[] sessionKey, List<User> recipents)
         {
             Dictionary<string, string> recipentsKeysDict = new Dictionary<string, string>();
             string encryptedKey;

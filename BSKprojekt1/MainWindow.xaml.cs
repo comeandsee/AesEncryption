@@ -72,7 +72,7 @@ namespace BSKprojekt1
         }
 
         private bool GetSelectedValuesFromGUI(out string inputFilePath,
-            out string outputFilePath, out string cipherMode, out List<User> recipents)
+            out string outputFilePath, out string cipherMode, out string fileExtension, out List<User> recipents)
         {
             bool readingAllOK = true;
 
@@ -85,6 +85,11 @@ namespace BSKprojekt1
                 readingAllOK = false;
             }
 
+            //get input file extension
+            fileExtension= System.IO.Path.GetExtension(inputFilePath);
+            Console.WriteLine("extension : " + fileExtension);
+
+            //get output file name
             string outputFileName = OutputFileTextBox.Text;
             if (string.IsNullOrEmpty(outputFileName))
             {
@@ -183,13 +188,12 @@ namespace BSKprojekt1
             worker.ProgressChanged += worker_ProgressChanged;
             worker.RunWorkerAsync();
 
-            string inputFilePath, outputFilePath, cipherMode;
-            List<User> recipents; 
-
-            bool correctInput = GetSelectedValuesFromGUI(out inputFilePath, out outputFilePath, out cipherMode, out recipents);
+ 
+            bool correctInput = GetSelectedValuesFromGUI(out string inputFilePath, out string outputFilePath, 
+              out string fileExtension, out string cipherMode, out List<User> recipents);
             if (correctInput)
             {
-                Encryption.GenerateEncodedFile(inputFilePath, outputFilePath, Globals.blockSize, cipherMode, recipents);
+                Encryption.GenerateEncodedFile(inputFilePath, outputFilePath, Globals.blockSize, cipherMode, fileExtension, recipents);
                 resultTextBlock.Text = "operacja zakończona";
                
             }
@@ -300,6 +304,23 @@ namespace BSKprojekt1
             DecryptionTextBlock.Text = "";
         }
 
+        private void Test_button_Click(object sender, RoutedEventArgs e)
+        {
+            
+            bool correctInput = GetSelectedValuesFromGUI(out string inputFilePath, 
+                out string outputFilePath, out string cipherMode, out string fileExtension, out List<User> recipents);
+
+            int keySizeBits = 128;
+
+            byte[] sessionKey = EncryptionHelper.GenerateSessionKey(keySizeBits);
+
+            Dictionary<string, string> recipentsKeysDict = Encryption.GetRecipentsEncryptedSessionKeys(sessionKey, recipents);
+
+            string tempFileWithHeader = "tempHeader.xml";
+            XmlHelpers.GenerateXMLHeader(tempFileWithHeader, Globals.Algorithm,
+                "123", "123", "EEE", "eee", recipentsKeysDict,fileExtension);
+
+        }
     }
 }
 
