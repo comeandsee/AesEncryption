@@ -68,7 +68,7 @@ namespace BSKprojekt1
 
     
 
-        private bool GetSelectedValuesFromGUI(out string inputFilePath,
+        private bool GetSelectedValuesFromGUIEncryption(out string inputFilePath,
             out string outputFilePath, out string cipherMode, out string fileExtension, out List<User> recipents)
         {
             bool readingAllOK = true;
@@ -217,7 +217,7 @@ namespace BSKprojekt1
             
 
             //get values from the user (from gui)
-            bool correctInput = GetSelectedValuesFromGUI(out inputFilePath, out outputFilePath,
+            bool correctInput = GetSelectedValuesFromGUIEncryption(out inputFilePath, out outputFilePath,
               out cipherMode, out fileExtension, out recipents);
             if (correctInput)
             {
@@ -230,6 +230,17 @@ namespace BSKprojekt1
             }
 
         }
+
+        //TODO only for testing
+        private void testbtn_Click(object sender, RoutedEventArgs e)
+        {
+            string filePath = "C:\\Users\\Zbigniew\\Desktop\\dieta2";
+            string decodedFilePath = "C:\\Users\\Zbigniew\\Desktop\\output";
+            Console.WriteLine("no klikam");
+            Decryption.DecryptFile(filePath, decodedFilePath,new byte[1]);
+
+        }
+        //todo end of only for testing
 
         private void DecodeButton_Click(object sender, RoutedEventArgs e)
         {
@@ -304,6 +315,8 @@ namespace BSKprojekt1
             ProgressTextBlock.Text = Globals.statusMsgEncryptionFinished;
         }
 
+        
+
         private void worker_ProgressChangedDecrytpion(object sender, ProgressChangedEventArgs e)
         {
             DecryptionProgress.Value = e.ProgressPercentage;
@@ -330,23 +343,7 @@ namespace BSKprojekt1
             DecryptionTextBlock.Text = "";
         }
 
-        private void Test_button_Click(object sender, RoutedEventArgs e)
-        {
-            
-            bool correctInput = GetSelectedValuesFromGUI(out string inputFilePath, 
-                out string outputFilePath, out string cipherMode, out string fileExtension, out List<User> recipents);
-
-            int keySizeBits = 128;
-
-            byte[] sessionKey = EncryptionHelper.GenerateSessionKey(keySizeBits);
-
-            Dictionary<string, string> recipentsKeysDict = Encryption.GetRecipentsEncryptedSessionKeys(sessionKey, recipents);
-
-            string tempFileWithHeader = "tempHeader.xml";
-            XmlHelpers.GenerateXMLHeader(tempFileWithHeader, Globals.Algorithm,
-                "123", "123", "EEE", "eee", recipentsKeysDict,fileExtension);
-
-        }
+        
     }
 }
 

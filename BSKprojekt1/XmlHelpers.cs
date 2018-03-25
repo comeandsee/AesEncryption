@@ -16,7 +16,7 @@ namespace BSKprojekt1
     {
         
         public static void GenerateXMLHeader(string outputFileName, string algorithm,
-            string keySize, string blockSize, string cipherMode, String iv, Dictionary<string, string> recipents,
+            string keySize, string blockSize, string cipherMode, string iv, Dictionary<string, string> recipents,
             String fileExtension)
         {
             
@@ -59,6 +59,82 @@ namespace BSKprojekt1
             xDoc.Save(outputFileName);
             
         
+        }
+
+
+        public static void RetrieveXmlHeaderFromFile(string filePath, out string xmlHeaderString, out long headerByteLength)
+        {
+            StringBuilder sb = new StringBuilder();
+            int bufferSize = 128;
+            headerByteLength = 0;
+     
+            using (var fileStream = File.OpenRead(filePath))
+            {
+                using (var streamReader = new StreamReader(fileStream, Encoding.UTF8, true, bufferSize))
+                {
+                    bool stop = false;
+                    String line;
+                    while (!stop && (line = streamReader.ReadLine()) != null)
+                    {
+                        sb.Append(line);
+                        if (string.IsNullOrWhiteSpace(line))
+                        {
+                            stop = true;
+                            headerByteLength = streamReader.BaseStream.Position;
+
+                        }
+
+                    }
+                    xmlHeaderString = sb.ToString();
+                }
+            }
+        }
+
+        public static void ReadDataFromXMLHeader(string xmlHeaderString,
+            out string algorithm, out string keySize, out string blockSize, 
+            out string cipherMode, out string iv, 
+            out Dictionary<string, string> recipents,
+            out string fileExtension)
+        {
+            
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(xmlHeaderString);
+            
+            algorithm = doc.DocumentElement
+                .SelectSingleNode("/" + Globals.XmlMainElement + "/" + Globals.XmlAlgorithm).InnerText;
+
+            keySize = doc.DocumentElement
+                .SelectSingleNode("/" + Globals.XmlMainElement + "/" + Globals.XmlKeySize).InnerText;
+
+            blockSize = doc.DocumentElement
+                .SelectSingleNode("/" + Globals.XmlMainElement + "/" + Globals.XmlBlockSize).InnerText;
+
+            cipherMode = doc.DocumentElement
+                .SelectSingleNode("/" + Globals.XmlMainElement + "/" + Globals.XmlCipherMode).InnerText;
+
+            iv = doc.DocumentElement
+                .SelectSingleNode("/" + Globals.XmlMainElement + "/" + Globals.XmlIV).InnerText;
+
+            fileExtension = doc.DocumentElement
+                .SelectSingleNode("/" + Globals.XmlMainElement + "/" + Globals.XmlExtension).InnerText;
+
+            
+            recipents = new Dictionary<string, string>();
+            //todo maaybe check if there are any?
+            string userEmail, userSessionKey;
+            XmlNode recipentsNode = doc.DocumentElement
+                .SelectSingleNode("/" + Globals.XmlMainElement + "/" + Globals.XmlApprovedUsers);
+            foreach(XmlNode recipentNode in recipentsNode.ChildNodes)
+            {
+                userEmail = recipentNode[Globals.XmlEmail].InnerText;
+                userSessionKey = recipentNode[Globals.XmlSessionKey].InnerText;
+                recipents.Add(userEmail, userSessionKey);
+            }
+        }
+
+        public static void ReadDecodedData(string filePath, long headerByteLength)
+        {
+
         }
     }
 }

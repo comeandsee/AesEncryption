@@ -56,6 +56,12 @@ namespace BSKprojekt1
                 {
                     srcStream.CopyTo(destStream);
                 }
+
+                //insert two blank lines between header and contents
+                byte[] newLine = Encoding.UTF8.GetBytes(Environment.NewLine);
+                destStream.Write(newLine, 0, 1);
+                destStream.Write(newLine, 0, 1);
+
                 using (Stream srcStream = File.OpenRead(encodedFile))
                 {
                     srcStream.CopyTo(destStream);

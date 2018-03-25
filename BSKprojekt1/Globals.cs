@@ -30,6 +30,11 @@ namespace BSKprojekt1
         public static String statusMsgEncryptionFinished = "Status: plik zaszyfrowany";
 
         public static int blockSize = 128;
-        
+
+        public const String modeECB = "ECB";
+        public const String modeCBC = "CBC";
+        public const String modeCFB = "CFB";
+        public const String modeOFB = "OFB";
+
     }
 }

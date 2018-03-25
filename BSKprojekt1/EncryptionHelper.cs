@@ -113,6 +113,7 @@ namespace BSKprojekt1
                             using (FileStream source = new FileStream(encodedFileName, FileMode.Open, 
                                 FileAccess.Read, FileShare.Read))
                             {
+                                
                                 source.CopyTo(cryptoStream);
                             }
                         }
