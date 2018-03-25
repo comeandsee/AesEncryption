@@ -118,14 +118,17 @@ namespace BSKprojekt1
             //retrieve selected recipents from listbox
             System.Collections.IList items = RecipentsListBox.SelectedItems;
             recipents = items.Cast<User>().ToList();
-           
+            //todo add nullcheck- now there can be a file noone can decrypt
             return readingAllOK;
         }
 
         private bool GetSelectedValuesFromGUIDecryption(out string inputFilePath,
-            out string outputFilePath,  out List<User> recipents)
+            out string outputFilePath,  out User recipent)
         {
             bool readingAllOK = true;
+            string outDirectory = "";
+            string decodedFileName = "";
+            outputFilePath = "";
 
             //retrieve input file and output file name
             inputFilePath = InputFileTextBoxDecryption.Text;
@@ -135,6 +138,10 @@ namespace BSKprojekt1
                 Console.WriteLine("wrong input file path");
                 readingAllOK = false;
             }
+            else
+            {
+                outDirectory = System.IO.Path.GetDirectoryName(inputFilePath);
+            }
 
             string outputFileName = OutputFileTextBoxDecryption.Text;
             if (string.IsNullOrEmpty(outputFileName))
@@ -143,15 +150,24 @@ namespace BSKprojekt1
                 readingAllOK = false;
 
             }
+            else
+            {
+                outputFilePath = outDirectory + "\\" + outputFileName;
+                decodedFileName = outDirectory + "\\result.txt";
+            }
+            
 
-            string outDirectory = System.IO.Path.GetDirectoryName(inputFilePath);
-            outputFilePath = outDirectory + "\\" + outputFileName;
+            //retrieve selected recipent of encoded file from listbox
+            recipent = (User)RecipentsListBoxDecryption.SelectedItem;
+            if(recipent == null)
+            {
+                readingAllOK = false;
+            }
+            else
+            {
+                Console.WriteLine("recipent " + recipent.Email);
 
-            string decodedFileName = outDirectory + "\\result.txt";
-
-            //retrieve selected recipents from listbox
-            //TODO- now it's all users
-            recipents = new List<User>(users);
+            }
 
             return readingAllOK;
         }
@@ -195,9 +211,9 @@ namespace BSKprojekt1
             // progress bar config
             BackgroundWorker worker = new BackgroundWorker();
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
-            worker.DoWork += Worker_DoWork;
-            worker.ProgressChanged += Worker_ProgressChanged;
+            worker.RunWorkerCompleted += Worker_RunWorkerCompletedEncryption;
+            worker.DoWork += Worker_DoWorkEncryption;
+            worker.ProgressChanged += Worker_ProgressChangedEncryption;
             
 
             //get values from the user (from gui)
@@ -218,21 +234,24 @@ namespace BSKprojekt1
         private void DecodeButton_Click(object sender, RoutedEventArgs e)
         {
             // progress bar config
-            BackgroundWorker worker1 = new BackgroundWorker();
+           /* BackgroundWorker worker1 = new BackgroundWorker();
             worker1.RunWorkerCompleted += worker_RunWorkerCompletedDecrytpion;
             worker1.WorkerReportsProgress = true;
             worker1.DoWork += worker_DoWorkDecrytpion;     // tu trzeba zmienic zeby ten progres szedl inaczej xd
             worker1.ProgressChanged += worker_ProgressChangedDecrytpion;
             worker1.RunWorkerAsync();
-
+            */
             string inputFilePath, outputFilePath;
-            List<User> recipents;
+            User recipent;
 
-            bool correctInput = GetSelectedValuesFromGUIDecryption(out inputFilePath, out outputFilePath, out recipents);
+            bool correctInput = GetSelectedValuesFromGUIDecryption(out inputFilePath, out outputFilePath, out recipent);
             if (correctInput)
             {
                 //to do DESZYFROWANIE
-                resultTextBlockDecryption.Text = "to jeszcze do zrobienia bardzo";
+                //Decryption.   
+            // Encryption.GenerateEncodedFile(inputFilePath, outputFilePath,
+               // Globals.blockSize, cipherMode, fileExtension, recipents, worker);
+
             }
             else
             {
@@ -262,13 +281,13 @@ namespace BSKprojekt1
 
         }
 
-        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void Worker_ProgressChangedEncryption(object sender, ProgressChangedEventArgs e)
         {
             EncryptionProgressBar.Value = e.ProgressPercentage;
             ProgressTextBlock.Text = Globals.statusMsgEncryption;
         }
 
-        private void Worker_DoWork(object sender, DoWorkEventArgs e)
+        private void Worker_DoWorkEncryption(object sender, DoWorkEventArgs e)
         {
             var worker = sender as BackgroundWorker;
 
@@ -278,7 +297,7 @@ namespace BSKprojekt1
                        
         }
 
-        private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void Worker_RunWorkerCompletedEncryption(object sender, RunWorkerCompletedEventArgs e)
         {
             MessageBox.Show("All Done!");
             EncryptionProgressBar.Value = 0;

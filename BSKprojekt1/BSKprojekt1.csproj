@@ -54,6 +54,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Decryption.cs" />
     <Compile Include="Encryption.cs" />
     <Compile Include="EncryptionHelper.cs" />
     <Compile Include="User.cs" />
