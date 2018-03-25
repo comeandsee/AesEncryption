@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -28,36 +30,65 @@ namespace BSKprojekt1
                 ICryptoTransform encryptor = aesAlg.CreateEncryptor();
 
                 //based on: https://stackoverflow.com/questions/9237324/encrypting-decrypting-large-files-net
-                using (FileStream destFileStream = new FileStream(destFileName, FileMode.Create, 
-                    FileAccess.Write, FileShare.None))
+                using (FileStream destFileStream = new FileStream(destFileName, FileMode.Create,
+                            FileAccess.Write, FileShare.None))
                 {
                     using (CryptoStream cryptoStream = new CryptoStream(destFileStream, encryptor, CryptoStreamMode.Write))
                     {
                         using (FileStream source = new FileStream(srcFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
                         {
-                            source.CopyTo(cryptoStream);
+                            Stopwatch stopwatch = Stopwatch.StartNew();
+
+                           // source.CopyTo(cryptoStream);
+
+
+                            byte[] buffer = new byte[128 * 1024];//todo decide on size
+                            int data, count = 1;
+                            while((data = source.Read(buffer, 0, buffer.Length)) > 0)
+                            {
+
+                                cryptoStream.Write(buffer, 0, data);
+                                //bgWorker.ReportProgress((int)(count / source.Length) * 100);
+                                //Console.WriteLine("still working " + count);
+                                count++;
+                            }
+                            stopwatch.Stop();
+                            Console.WriteLine(stopwatch.ElapsedMilliseconds);
+                            
                         }
                     }
                 }
 
-
-                /*
-                using (MemoryStream msEncrypt = new MemoryStream())
-                {
-                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                /*using (FileStream destFileStream = new FileStream(destFileName, FileMode.Create, 
+                        FileAccess.Write, FileShare.None))
                     {
-                        //when encoding strings
-                         (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                        using (CryptoStream cryptoStream = new CryptoStream(destFileStream, encryptor, CryptoStreamMode.Write))
                         {
-                            swEncrypt.Write(fileText);
+                            using (FileStream source = new FileStream(srcFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                            {
+                                source.CopyTo(cryptoStream);
+                            }
                         }
-                        encrypted = msEncrypt.ToArray();
-                        
-                        
+                    }*/
+
+
+                            /*
+                            using (MemoryStream msEncrypt = new MemoryStream())
+                            {
+                                using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                                {
+                                    //when encoding strings
+                                     (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                                    {
+                                        swEncrypt.Write(fileText);
+                                    }
+                                    encrypted = msEncrypt.ToArray();
+
+
+                                }
+                            }*/
+                        }
                     }
-                }*/
-            }
-        }
 
         public static void AesDecryptToFile(string encodedFileName, string decodedFileName, byte[] key, CipherMode mode, int blockSize, byte[] IV)
         {

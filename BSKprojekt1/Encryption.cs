@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -10,7 +11,9 @@ namespace BSKprojekt1
 {
     public static class Encryption
     {
-        public static void GenerateEncodedFile(string inputFilePath, string outputFilePath, int blockSize, string cipherMode, string fileExtension, List<User> recipents)
+        public static void GenerateEncodedFile(string inputFilePath, 
+            string outputFilePath, int blockSize, string cipherMode, 
+            string fileExtension, List<User> recipents)
         {
             int keySizeBits = 128; 
            
