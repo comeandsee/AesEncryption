@@ -15,7 +15,7 @@ namespace BSKprojekt1
         //based on https://msdn.microsoft.com/pl-pl/library/system.security.cryptography.aes(v=vs.110).aspx
         //encrypts file from path srcFileName to file in path destFileName
         public static void AesEncryptFromFile(string srcFileName, string destFileName, 
-            byte[] key, CipherMode mode, int blockSize, out byte[] IV)
+            byte[] key, CipherMode mode, int blockSize, out byte[] IV, BackgroundWorker worker)
         {
             using(Aes aesAlg = Aes.Create())
             {
@@ -39,17 +39,18 @@ namespace BSKprojekt1
                         {
                             Stopwatch stopwatch = Stopwatch.StartNew();
 
-                           // source.CopyTo(cryptoStream);
+                            // source.CopyTo(cryptoStream);
 
-
-                            byte[] buffer = new byte[128 * 1024];//todo decide on size
+                            int bitsInBuffer = 64 * 1024;
+                            byte[] buffer = new byte[bitsInBuffer];//todo decide on size
                             int data, count = 1;
+                            double progress;
                             while((data = source.Read(buffer, 0, buffer.Length)) > 0)
                             {
 
                                 cryptoStream.Write(buffer, 0, data);
-                                //bgWorker.ReportProgress((int)(count / source.Length) * 100);
-                                //Console.WriteLine("still working " + count);
+                                progress = ((double)count* bitsInBuffer / source.Length)*100;
+                                worker.ReportProgress((int)progress);
                                 count++;
                             }
                             stopwatch.Stop();

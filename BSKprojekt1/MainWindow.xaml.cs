@@ -193,21 +193,20 @@ namespace BSKprojekt1
         private void EncodeButton_Click(object sender, RoutedEventArgs e)
         {
             // progress bar config
-           /* BackgroundWorker worker = new BackgroundWorker();
+            BackgroundWorker worker = new BackgroundWorker();
             worker.WorkerReportsProgress = true;
-            worker.RunWorkerCompleted += worker_RunWorkerCompleted;
-            worker.DoWork += worker_DoWork;
-            worker.ProgressChanged += worker_ProgressChanged;
-            worker.RunWorkerAsync();
-            */
+            worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+            worker.DoWork += Worker_DoWork;
+            worker.ProgressChanged += Worker_ProgressChanged;
+            
 
             //get values from the user (from gui)
             bool correctInput = GetSelectedValuesFromGUI(out inputFilePath, out outputFilePath,
               out cipherMode, out fileExtension, out recipents);
             if (correctInput)
             {
-                Encryption.GenerateEncodedFile(inputFilePath, outputFilePath,
-                Globals.blockSize, cipherMode, fileExtension, recipents);
+                worker.RunWorkerAsync();
+
             }
             else
             {
@@ -263,31 +262,27 @@ namespace BSKprojekt1
 
         }
 
-        private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             EncryptionProgressBar.Value = e.ProgressPercentage;
-            ProgressTextBlock.Text = (string)e.UserState;
+            ProgressTextBlock.Text = Globals.statusMsgEncryption;
         }
 
-        private void worker_DoWork(object sender, DoWorkEventArgs e)
+        private void Worker_DoWork(object sender, DoWorkEventArgs e)
         {
             var worker = sender as BackgroundWorker;
-            worker.ReportProgress(0);
-            for (int i = 0; i < 10; i++)
-            {
-                Thread.Sleep(1000);
-                worker.ReportProgress((i + 1) * 10, String.Format("Processing  {0}.", i + 2));
-            }
 
-            worker.ReportProgress(100, "Done Processing.");
-            
+            worker.ReportProgress(0);
+            Encryption.GenerateEncodedFile(inputFilePath, outputFilePath,
+                Globals.blockSize, cipherMode, fileExtension, recipents, worker);
+                       
         }
 
-        private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             MessageBox.Show("All Done!");
             EncryptionProgressBar.Value = 0;
-            ProgressTextBlock.Text = "";
+            ProgressTextBlock.Text = Globals.statusMsgEncryptionFinished;
         }
 
         private void worker_ProgressChangedDecrytpion(object sender, ProgressChangedEventArgs e)

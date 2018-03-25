@@ -13,7 +13,8 @@ namespace BSKprojekt1
     {
         public static void GenerateEncodedFile(string inputFilePath, 
             string outputFilePath, int blockSize, string cipherMode, 
-            string fileExtension, List<User> recipents)
+            string fileExtension, List<User> recipents,
+            BackgroundWorker worker)
         {
             int keySizeBits = 128; 
            
@@ -31,7 +32,7 @@ namespace BSKprojekt1
             //encrypting input file and saving it in destined out file
             using (Aes myAes = Aes.Create())
             {
-                EncryptionHelper.AesEncryptFromFile(inputFilePath, tempEncodedFile, myAes.Key, myAes.Mode, myAes.BlockSize, out IV);
+                EncryptionHelper.AesEncryptFromFile(inputFilePath, tempEncodedFile, myAes.Key, myAes.Mode, myAes.BlockSize, out IV, worker);
                 //Encryption.DecryptToFile(pathToOutFile, decodedFileName, myAes.Key, myAes.Mode, myAes.BlockSize, IV);
             }
 

@@ -26,6 +26,8 @@ namespace BSKprojekt1
         public static String UsersNode = "Users";
 
         public static String Algorithm = "AES";
+        public static String statusMsgEncryption = "Status: szyfrowanie";
+        public static String statusMsgEncryptionFinished = "Status: plik zaszyfrowany";
 
         public static int blockSize = 128;
         
