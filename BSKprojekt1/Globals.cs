@@ -8,6 +8,14 @@ namespace BSKprojekt1
 {
     static class Globals
     {
+
+        public static String AppMainDirPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\CryptoVirus";
+        public static String PathToPrivateKeysDir = AppMainDirPath + "\\NotReallyPrivateKeys";
+        public static String PswrdsFilePath = AppMainDirPath + "\\pswrds";
+        public static String PublicKeysFilePath = AppMainDirPath + "\\public";
+        public static String PrivateKeysFilePath = PathToPrivateKeysDir + "\\private";
+
+
         public static String XmlMainElement = "EncryptedFileHeader";
         public static String XmlAlgorithm = "Algorithm";
         public static String XmlKeySize = "KeySize";
@@ -20,6 +28,8 @@ namespace BSKprojekt1
         public static String XmlEmail = "Email";
         public static String XmlSessionKey = "SessionKey";
         public static String XmlPublicKey = "PublicKey";
+        public static String XmlPrivateKey = "PrivatecKey";
+        public static String XmlPassword = "Password";
 
 
         public static String UsersXmlFilePath = "users.xml";

@@ -171,7 +171,6 @@ namespace BSKprojekt1
                     privateKey = rsa.ToXmlString(true);
 
                     
-                    //File.WriteAllText("C:\\Users\\Zbigniew\\Desktop\\keyz2.xml", privateKey);
                 }
                 finally
                 {

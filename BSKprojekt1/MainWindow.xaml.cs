@@ -30,9 +30,19 @@ namespace BSKprojekt1
         public MainWindow()
         {
             InitializeComponent();
-
+            PrepareAppDirs();
             PrepareAppUsers();
         }
+
+        private void PrepareAppDirs()
+        {
+            //creates AppMainDirPath directory (if it doesn't exist) for all app files
+            //and PathToPrivateKeysDir directory (if it doesn't exist) for private keys file
+            Directory.CreateDirectory(Globals.AppMainDirPath);
+            Directory.CreateDirectory(Globals.PathToPrivateKeysDir);
+
+        }
+
 
         private void PrepareAppUsers()
         {
@@ -172,34 +182,45 @@ namespace BSKprojekt1
             return readingAllOK;
         }
 
+
         private bool GetSelectedValuesFromGUIRegister(out string email,
-           out string password, out List<User> recipents)
+           out string password)
         {
             bool readingAllOK = true;
 
-            //retrieve input file and output file name
+            //retrieve email and password
             email = TextBoxRegistrationEmail.Text;
             if (string.IsNullOrEmpty(email))
             {
-               
-                //to do lepsze sprawdzanie
                 Console.WriteLine("wrong email");
                 readingAllOK = false;
             }
-
-            password = userPassword.Password;
-          //  Console.WriteLine("uwaga hasło : " + password);
-            if (string.IsNullOrEmpty(password))
+            else
             {
-                Console.WriteLine("the password must contain letters ");
-                readingAllOK = false;
-
+                try
+                {
+                    //todo this needs polishing
+                    var addr = new System.Net.Mail.MailAddress(email);
+                    readingAllOK = (addr.Address == email);
+                    
+                }
+                catch
+                {
+                    Console.WriteLine("wrong email");
+                    readingAllOK = false;
+                }
             }
 
-            //retrieve selected recipents from listbox
-            //TODO- now it's all users
-            recipents = new List<User>(users);
-    
+
+            password = userPassword.Password;
+
+            if (!UsersManagement.PasswordCorrect(password))
+            {
+                Console.WriteLine("wrong pswd");
+                readingAllOK = false;
+                //todo an explanation 'why' needed
+            }
+            
             return readingAllOK;
         }
 
@@ -273,16 +294,10 @@ namespace BSKprojekt1
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-            string email, password;
-            List<User> recipents;
-          //  password = (sender as PasswordBox).Password;
-            bool correctInput = GetSelectedValuesFromGUIRegister(out email, out password, out recipents);
+            bool correctInput = GetSelectedValuesFromGUIRegister(out string email, out string password);
             if (correctInput)
             {
-                //to do 
-
                 UsersManagement.AddUser(email, password);
-                PrepareAppUsers();
                 resultTextBlockRegister.Text = "Zostałeś zarejestrowany, dziękujemy ! Tak na prawde nie xd";
             }
             else
@@ -315,7 +330,7 @@ namespace BSKprojekt1
             ProgressTextBlock.Text = Globals.statusMsgEncryptionFinished;
         }
 
-        
+      
 
         private void worker_ProgressChangedDecrytpion(object sender, ProgressChangedEventArgs e)
         {
