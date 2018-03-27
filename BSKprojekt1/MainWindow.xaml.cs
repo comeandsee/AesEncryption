@@ -43,17 +43,14 @@ namespace BSKprojekt1
 
         }
 
-
         private void PrepareAppUsers()
         {
-            users = UsersManagement.GetUsersListFromFile("dummy file name");
-            //set listbox to display all users (as recipents of encrypted data)
+            users = UsersManagement.GetUsersListFromFile();
 
-
-
+            //set listbox to display all users (as potential recipents of encrypted data)
             RecipentsListBox.ItemsSource = users;
             RecipentsListBoxDecryption.ItemsSource = users;
-            RecipentsListBoxRegister.ItemsSource = users;
+            RecipentsListViewRegister.ItemsSource = users;
         }
         
         private void SelectInputFileButton_Click(object sender, RoutedEventArgs e)
@@ -75,8 +72,7 @@ namespace BSKprojekt1
                 InputFileTextBoxDecryption.Text = openFileDialog.FileName;
             }
         }
-
-    
+        
 
         private bool GetSelectedValuesFromGUIEncryption(out string inputFilePath,
             out string outputFilePath, out string cipherMode, out string fileExtension, out List<User> recipents)
@@ -255,10 +251,10 @@ namespace BSKprojekt1
         //TODO only for testing
         private void testbtn_Click(object sender, RoutedEventArgs e)
         {
+            /*Console.WriteLine("no klikam"); 
             string filePath = "C:\\Users\\Zbigniew\\Desktop\\dieta2";
             string decodedFilePath = "C:\\Users\\Zbigniew\\Desktop\\output";
-            Console.WriteLine("no klikam");
-            Decryption.DecryptFile(filePath, decodedFilePath,new byte[1]);
+            Decryption.DecryptFile(filePath, decodedFilePath, );*/
 
         }
         //todo end of only for testing
@@ -279,10 +275,7 @@ namespace BSKprojekt1
             bool correctInput = GetSelectedValuesFromGUIDecryption(out inputFilePath, out outputFilePath, out recipent);
             if (correctInput)
             {
-                //to do DESZYFROWANIE
-                //Decryption.   
-            // Encryption.GenerateEncodedFile(inputFilePath, outputFilePath,
-               // Globals.blockSize, cipherMode, fileExtension, recipents, worker);
+                //Decryption.DecryptFile(filePath, decodedFilePath, ); 
 
             }
             else
@@ -297,11 +290,23 @@ namespace BSKprojekt1
             bool correctInput = GetSelectedValuesFromGUIRegister(out string email, out string password);
             if (correctInput)
             {
-                UsersManagement.AddUser(email, password);
+                User newUser = UsersManagement.AddUser(email, password);
+                users.Add(newUser);
+                RecipentsListBox.ItemsSource = null;
+                RecipentsListBoxDecryption.ItemsSource = null;
+                RecipentsListViewRegister.ItemsSource = null;
+
+
+                RecipentsListBox.ItemsSource = users;
+                RecipentsListBoxDecryption.ItemsSource = users;
+                RecipentsListViewRegister.ItemsSource = users;
+
                 resultTextBlockRegister.Text = "Zostałeś zarejestrowany, dziękujemy ! Tak na prawde nie xd";
             }
             else
             {
+                resultTextBlockRegister.Text = "błąd rejestracji";
+
                 //TODO error message about incorrect input
             }
 
@@ -329,9 +334,7 @@ namespace BSKprojekt1
             EncryptionProgressBar.Value = 0;
             ProgressTextBlock.Text = Globals.statusMsgEncryptionFinished;
         }
-
-      
-
+        
         private void worker_ProgressChangedDecrytpion(object sender, ProgressChangedEventArgs e)
         {
             DecryptionProgress.Value = e.ProgressPercentage;

@@ -91,11 +91,11 @@ namespace BSKprojekt1
                         }
                     }
 
-        public static void AesDecryptToFile(string encodedFileName, string decodedFileName, byte[] key, CipherMode mode, int blockSize, byte[] IV)
+        public static void AesDecryptToFile(string encodedFileName, string decodedFileName, byte[] sessionKey, CipherMode mode, int blockSize, byte[] IV)
         {
             using(Aes aesAlg = Aes.Create())
             {
-                aesAlg.Key = key;
+                aesAlg.Key = sessionKey;
                 aesAlg.Mode = mode;
                 aesAlg.BlockSize = blockSize;
                 aesAlg.IV = IV;
@@ -178,36 +178,7 @@ namespace BSKprojekt1
                 }
             }
         }
-
-        //TODO- getting the key from publicKeys.xml file (that doesn't exist yet)
-        //gets public key of user with userEmail
-        //returns it as xml string
-        public static string GetUsersPublicKey(string userEmail)
-        {/*
-            XmlDocument doc = new XmlDocument();
-            doc.Load(Globals.UsersXmlFilePath);
-
-            XmlNode usersNode = doc.DocumentElement.
-                SelectSingleNode("//" + Globals.UsersNode);
-
-            if (usersNode == null)
-            {
-                Console.WriteLine("there is no users node");
-                return;
-            }
-
-            //for each user
-            foreach (XmlNode node in usersNode.ChildNodes)
-            {
-                userEmail = node[Globals.XmlEmail];
-                user = new User(userEmail.InnerText);
-                users.Add(user);
-                Console.WriteLine("added " + user.Email);
-
-            }*/
-            string userPublicKey = null;
-            return userPublicKey;
-        }
+        
 
         //TODO this is temporary
         //as a test- generates session key, encrypts and decrypts it

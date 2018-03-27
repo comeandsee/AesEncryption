@@ -18,7 +18,7 @@ namespace BSKprojekt1
         {
             int keySizeBits = 128; 
            
-            //generate session file
+            //generate session key
             byte[] sessionKey = EncryptionHelper.GenerateSessionKey(keySizeBits);
 
             //get a dictionary with recipent emails and their encrypted session keys

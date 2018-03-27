@@ -28,7 +28,7 @@ namespace BSKprojekt1
         public static String XmlEmail = "Email";
         public static String XmlSessionKey = "SessionKey";
         public static String XmlPublicKey = "PublicKey";
-        public static String XmlPrivateKey = "PrivatecKey";
+        public static String XmlPrivateKey = "PrivateKey";
         public static String XmlPassword = "Password";
 
 

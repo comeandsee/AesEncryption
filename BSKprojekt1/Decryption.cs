@@ -9,7 +9,7 @@ namespace BSKprojekt1
 {
     public static class Decryption
     {
-        public static void DecryptFile(string filePath, string decodedFileName, byte[] key)
+        public static void DecryptFile(string filePath, string decodedFileName, User selectedUser)
         {
             Console.WriteLine("decrypting");
             XmlHelpers.RetrieveXmlHeaderFromFile(filePath, out string xmlHeaderString, out long headerByteLength);
@@ -19,6 +19,30 @@ namespace BSKprojekt1
                 out string blockSize, out string cipherMode,
                 out string iv, out Dictionary<string, string> recipents,
                 out string fileExtension);
+            //recipents are kept in a dictionary as 
+            //<recipentEmail, encryptedUserSessionKey> pairs
+
+            //to decrypt the file we need a session key
+            //we need to find selectedUser- the user that current user of the app claims to be-
+            //get their encryptedUserSessionKey
+            //and decrypt the key using user's private key
+
+            //todo maybe set to some noise, so that if foreach doesn't find anything, the decoding will work and produce noise-file
+            string encryptedSessionKeyString ="aaaa";
+            foreach(KeyValuePair<string, string> emailKey in recipents)
+            {
+                if (emailKey.Key.Equals(selectedUser.Email))
+                {
+                    encryptedSessionKeyString = emailKey.Value;
+                    break;
+                }
+            }
+
+            //encrypt session key using user's private key
+            string userPrivateKeyString = UsersManagement.GetUserPrivateKeyFromFile(selectedUser.Email);
+
+            byte[] decryptedSessionKeyByte = EncryptionHelper.DecryptSessionKeyFromString(encryptedSessionKeyString, userPrivateKeyString);
+
 
             //set cipher mode
             CipherMode mode = CipherMode.CBC;
@@ -38,10 +62,10 @@ namespace BSKprojekt1
                     break;
 
             }
-            /*
+            
             EncryptionHelper.AesDecryptToFile(filePath, 
-                decodedFileName + fileExtension, key, mode, Int32.Parse(keySize), Convert.FromBase64String(iv));
-                */
+                decodedFileName + fileExtension, decryptedSessionKeyByte, mode, Int32.Parse(keySize), Convert.FromBase64String(iv));
+                
         }
     }
 }

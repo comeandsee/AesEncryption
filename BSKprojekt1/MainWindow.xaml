@@ -78,7 +78,7 @@
                     <Label x:Name="labelRegistration1" Content="Podaj hasło"  HorizontalAlignment="Left" Margin="45,87,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.581,-0.09"/>
                     <PasswordBox x:Name="userPassword" PasswordChar="*" Margin="45,4.6,545.4,247.2" Grid.Row="1"/>
 
-                    <ListBox x:Name="RecipentsListBoxRegister" SelectionMode="Multiple" HorizontalAlignment="Left" Height="106" VerticalAlignment="Top" Width="313" Margin="412,77,0,0" RenderTransformOrigin="0.546,0.801" Grid.RowSpan="2"/>
+                    <ListView x:Name="RecipentsListViewRegister" HorizontalAlignment="Left" Height="106" VerticalAlignment="Top" Width="313" Margin="412,77,0,0" RenderTransformOrigin="0.546,0.801" Grid.RowSpan="2"/>
                     <Label x:Name="labelRegister" Content="Użytkownicy" HorizontalAlignment="Left" Margin="412,46,0,0" VerticalAlignment="Top" Width="188"/>
 
                     <Button x:Name="RegisterButton" Content="Stwórz konto" HorizontalAlignment="Left" Margin="45,45.6,0,0" Grid.Row="1" VerticalAlignment="Top" Width="75" RenderTransformOrigin="-0.089,0.818"  Click="RegisterButton_Click"/>

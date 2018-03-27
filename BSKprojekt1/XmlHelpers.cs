@@ -121,14 +121,14 @@ namespace BSKprojekt1
             
             recipents = new Dictionary<string, string>();
             //todo maaybe check if there are any?
-            string userEmail, userSessionKey;
+            string userEmail, encryptedUserSessionKey;
             XmlNode recipentsNode = doc.DocumentElement
                 .SelectSingleNode("/" + Globals.XmlMainElement + "/" + Globals.XmlApprovedUsers);
             foreach(XmlNode recipentNode in recipentsNode.ChildNodes)
             {
                 userEmail = recipentNode[Globals.XmlEmail].InnerText;
-                userSessionKey = recipentNode[Globals.XmlSessionKey].InnerText;
-                recipents.Add(userEmail, userSessionKey);
+                encryptedUserSessionKey = recipentNode[Globals.XmlSessionKey].InnerText;
+                recipents.Add(userEmail, encryptedUserSessionKey);
             }
         }
 

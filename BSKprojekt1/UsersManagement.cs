@@ -14,28 +14,35 @@ namespace BSKprojekt1
     {
         public static List<User> users = new List<User>();
         //reads xml file with structure 
-        //<User> 
-        //  <Email> </Email>
-        //  <PublicKey> </PublicKey>
-        //</User>
+        //<Users>
+        //      <User> 
+        //          <Email> </Email>
+        //          <PublicKey> </PublicKey>
+        //      </User>
+        //</Users>
         //and returns users list
-        //todo create that file and read from it! it's dummy data for now
-        public static List<User> GetUsersListFromFile(string usersAndKeysXmlFilePath)
+        public static List<User> GetUsersListFromFile()
         {
-
-            string publicKey, privateKey;
+            /*string publicKey, privateKey;
             EncryptionHelper.GenerateKeyPairRSA(out publicKey, out privateKey);
             users.Add(new User("p@r.com", publicKey));
 
             EncryptionHelper.GenerateKeyPairRSA(out publicKey, out privateKey);
             users.Add(new User("m@r.com", publicKey));
-
-            /*XmlNode userEmail, userPublicKey;
+            */
+            XmlNode userEmail, userPublicKey;
             List<User> users = new List<User>();
             User user;
 
             XmlDocument doc = new XmlDocument();
-            doc.Load(Globals.UsersXmlFilePath);
+
+            if (!File.Exists(Globals.PublicKeysFilePath))
+            {
+                Console.WriteLine("there are no users in the db");
+                return null;
+            }
+
+            doc.Load(Globals.PublicKeysFilePath);
 
             XmlNode usersNode = doc.DocumentElement.
                 SelectSingleNode("//" + Globals.UsersNode);
@@ -57,39 +64,63 @@ namespace BSKprojekt1
                 Console.WriteLine("added " + user.Email + ", key: " + user.publicRSAKey);
 
             }
-            */
+            
             return users;
 
         }
 
-        public static void AddUser(String email, String password)
+        //getting the key from private.xml file
+        //gets private key of user with userEmail
+        //returns it as xml string
+        public static string GetUserPrivateKeyFromFile(string userEmail)
+        {
+            string privateKey = "aaa";
+            XmlNode userEmailNode, userPrivateKeyNode;
+
+            XmlDocument doc = new XmlDocument();
+
+            if (!File.Exists(Globals.PrivateKeysFilePath))
+            {
+                Console.WriteLine("there are no users in the db");
+                return null;
+            }
+
+            doc.Load(Globals.PrivateKeysFilePath);
+
+            XmlNode usersNode = doc.DocumentElement.
+                SelectSingleNode("//" + Globals.UsersNode);
+
+            if (usersNode == null)
+            {
+                Console.WriteLine("there is no users node");
+                return null;
+            }
+
+            //for each user
+            foreach (XmlNode node in usersNode.ChildNodes)
+            {
+                userEmailNode = node[Globals.XmlEmail];
+                userPrivateKeyNode = node[Globals.XmlPrivateKey];
+
+                if (userEmailNode.InnerText.Equals(userEmail))
+                {
+                    privateKey = userPrivateKeyNode.InnerText;
+                    Console.WriteLine("retrieved key of "+ userEmail + ": "+privateKey );
+
+                    break;
+                }
+                
+
+            }
+
+            return privateKey;
+
+        }
+
+        public static User AddUser(String email, String password)
         {
             EncryptionHelper.GenerateKeyPairRSA(out string publicKey, out string privateKey);
             //todo maaybe check if user already exists
-            using (var rsa = new RSACryptoServiceProvider(1024))
-            {
-                try
-                {
-                    Console.WriteLine("public key " + publicKey);
-                    rsa.FromXmlString(publicKey);//todo start from here- powinno teoretycznie zainicjalizować obiekt rsa z tego klucza- czy działa nie wiem
-                    //ponadto to nie jest ten sam klucz co zapisany jakby nie patrzeć- kodowanie może być inne i < to &lt;
-                    Console.WriteLine("all good");
-
-                }
-                catch
-                {
-                    Console.WriteLine("sth went wrong");
-                }
-                finally
-                {
-                    rsa.PersistKeyInCsp = false;
-                }
-                
-            }
-
-
-
-            users.Add(new User(email, publicKey));
 
             //add user to all xml files
             //pswrds(.xml): 
@@ -105,15 +136,15 @@ namespace BSKprojekt1
             //      <User><Email></Email><PrivateKey></PrivateKey></User>
             //  </Users>  
 
-            /*
+            
             AddUserToCorrectFile(email, password, Globals.PswrdsFilePath, Globals.XmlPassword);
             AddUserToCorrectFile(email, publicKey, Globals.PublicKeysFilePath, Globals.XmlPublicKey);
             AddUserToCorrectFile(email, privateKey, Globals.PrivateKeysFilePath, Globals.XmlPrivateKey);
-            */
 
+            return new User(email, publicKey);
 
         }
-        
+
         private static void AddUserToCorrectFile(string userEmail, string value, string filePath, string valueNodeName)
         {
             XDocument doc;
