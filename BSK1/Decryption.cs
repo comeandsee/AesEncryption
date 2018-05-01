@@ -35,7 +35,46 @@ namespace BSK1
             long headerLengthInBytes = ManageHeader();
             byte[] decryptedSessionKeyBytes = ManageRecipent();
 
-            DecryptFile(headerLengthInBytes, decryptedSessionKeyBytes, worker);
+            try
+            {
+                DecryptFile(headerLengthInBytes, decryptedSessionKeyBytes, worker);
+            }catch(Exception e)
+            {
+                //can't decrypt file, so create a file with encrypted contents
+                //and change extension
+                Console.WriteLine("generating wrong file");
+                GenerateWrongFile(headerLengthInBytes, worker);
+            }
+        }
+
+        //based on: https://stackoverflow.com/questions/3914445/how-to-write-contents-of-one-file-to-another-file
+        private void GenerateWrongFile(long headerLengthInBytes, BackgroundWorker worker)
+        {
+            using (FileStream stream = File.OpenRead(EncryptedFile))
+            using (FileStream writeStream = File.OpenWrite(DecryptedFile))
+            {
+                //start reading from after the header
+                stream.Position = headerLengthInBytes;
+                BinaryReader reader = new BinaryReader(stream);
+                BinaryWriter writer = new BinaryWriter(writeStream);
+
+                // create a buffer to hold the bytes 
+                int bufferSize = 1024;
+                byte[] buffer = new Byte[bufferSize];
+                int bytesRead, count = 1;
+                double progress;
+
+                // while the read method returns bytes
+                // keep writing them to the output stream
+                while ((bytesRead =
+                        stream.Read(buffer, 0, bufferSize)) > 0)
+                {
+                    writeStream.Write(buffer, 0, bytesRead);
+                    progress = ((double)count * bufferSize / stream.Length) * 100;
+                    worker.ReportProgress((int)progress);
+                    count++;
+                }
+            }
         }
 
         //decrypts EncryptedFile file, start reading the file at 
@@ -73,7 +112,6 @@ namespace BSK1
                                 double progress;
                                 while ((data = source.Read(buffer, 0, buffer.Length)) > 0)
                                 {
-
                                     cryptoStream.Write(buffer, 0, data);
                                     progress = ((double)count * bitsInBuffer / source.Length) * 100;
                                     worker.ReportProgress((int)progress);
@@ -107,19 +145,30 @@ namespace BSK1
 
             //todo maybe set to some noise, so that if foreach doesn't find anything, the decoding will work and produce noise-file
             string encryptedSessionKeyString = "err";
+            bool userIsAuthorizedToDecrypt = false;
             foreach (KeyValuePair<string, string> emailKey in RecipentsEmailSessionKey)
             {
                 if (emailKey.Key.Equals(SelectedUser.Email))
                 {
                     encryptedSessionKeyString = emailKey.Value;
+                    userIsAuthorizedToDecrypt = true;
                     break;
                 }
+            }
+
+            //if selected user is not on recipents list- they have no right to decrypt file
+            //so generate random session key
+            if (!userIsAuthorizedToDecrypt)
+            {
+                Console.WriteLine("user can't decode that file! generating random session key");
+                return null;
             }
 
             //decrypt session key using user's private key
             string userPrivateKeyString = UsersManagement.GetUserPrivateKeyFromFile(SelectedUser.Email);
             
-            byte[] decryptedSessionKeyBytes = EncryptionHelper.DecryptSessionKeyFromString(encryptedSessionKeyString, userPrivateKeyString);
+            byte[] decryptedSessionKeyBytes = 
+                EncryptionHelper.DecryptSessionKeyFromString(encryptedSessionKeyString, userPrivateKeyString);
             return decryptedSessionKeyBytes;
         }
 
