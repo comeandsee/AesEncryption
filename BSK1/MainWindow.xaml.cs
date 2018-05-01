@@ -25,22 +25,17 @@ namespace BSK1
     public partial class MainWindow : Window
     {
         private List<User> users;
+        private string inputFilePath, outputFilePath, cipherMode, fileExtension;
+        private List<User> recipents;
+        private User recipent;
+
         public MainWindow()
         {
             InitializeComponent();
             PrepareAppDirs();
             PrepareAppUsers();
         }
-
-      
-            
-
-        private void TestClassbtn_Click(object sender, RoutedEventArgs e)
-        {
-            // Encryption.GenerateEncodedFile(inputFilePath, outputFilePath,
-            //   Globals.blockSize, cipherMode, fileExtension, recipents, worker);
-
-        }
+        
 
         private void PrepareAppDirs()
         {
@@ -228,8 +223,7 @@ namespace BSK1
             return readingAllOK;
         }
 
-        private string inputFilePath, outputFilePath, cipherMode, fileExtension;
-        private List<User> recipents;
+        
 
         private void EncodeButton_Click(object sender, RoutedEventArgs e)
         {
@@ -263,28 +257,23 @@ namespace BSK1
         {
             // progress bar config
             BackgroundWorker worker = new BackgroundWorker();
-            worker.RunWorkerCompleted += worker_RunWorkerCompletedDecrytpion;
             worker.WorkerReportsProgress = true;
-            worker.DoWork += worker_DoWorkDecrytpion;     // tu trzeba zmienic zeby ten progres szedl inaczej xd
-            worker.ProgressChanged += worker_ProgressChangedDecrytpion;
-            //worker.RunWorkerAsync();
-                
-            string inputFilePath, outputFilePath;
-            User recipent;
+            worker.RunWorkerCompleted += Worker_RunWorkerCompletedDecryption;
+            worker.DoWork += Worker_DoWorkDecryption;
+            worker.ProgressChanged += Worker_ProgressChangedDecryption;
 
+
+            //get values from the user (from gui)
+            //todo setting global var recipent, inputfilepath and outputfilepath here
             bool correctInput = GetSelectedValuesFromGUIDecryption(out inputFilePath, out outputFilePath, out recipent);
             if (correctInput)
             {
-                Decryption decryption = new Decryption(inputFilePath,
-                    outputFilePath, recipent);
-                decryption.Decrypt(worker);
-                //Decryption.DecryptFile(eo, inputFilePath, outputFilePath, recipent);
+                worker.RunWorkerAsync();
 
             }
             else
             {
                 //TODO error message about incorrect input
-                Console.WriteLine("incorrect input, doing nothing");
             }
 
         }
@@ -325,50 +314,45 @@ namespace BSK1
         private void Worker_DoWorkEncryption(object sender, DoWorkEventArgs e)
         {
             var worker = sender as BackgroundWorker;
-
             worker.ReportProgress(0);
 
             Encryption encryption = new Encryption(inputFilePath, outputFilePath,
                 Globals.blockSize, cipherMode, fileExtension, recipents);
             
-
             encryption.GenerateEncodedFile(worker);
 
         }
 
         private void Worker_RunWorkerCompletedEncryption(object sender, RunWorkerCompletedEventArgs e)
         {
-            MessageBox.Show("All Done!");
+            MessageBox.Show(Globals.encryptionFinishedPopup);
             EncryptionProgressBar.Value = 0;
             ProgressTextBlock.Text = Globals.statusMsgEncryptionFinished;
         }
 
 
 
-        private void worker_ProgressChangedDecrytpion(object sender, ProgressChangedEventArgs e)
+        private void Worker_ProgressChangedDecryption(object sender, ProgressChangedEventArgs e)
         {
-            DecryptionProgress.Value = e.ProgressPercentage;
-            DecryptionTextBlock.Text = (string)e.UserState;
+            DecryptionProgressBar.Value = e.ProgressPercentage;
+            DecryptionTextBlock.Text = Globals.statusMsgDecryption;
         }
 
-        private void worker_DoWorkDecrytpion(object sender, DoWorkEventArgs e)
+        private void Worker_DoWorkDecryption(object sender, DoWorkEventArgs e)
         {
-            /*var worker = sender as BackgroundWorker;
-            worker.ReportProgress(0, String.Format("Processing 1."));
-            for (int i = 0; i < 10; i++)
-            {
-                Thread.Sleep(10);
-                worker.ReportProgress((i + 1) * 10, String.Format("Processing  {0}.", i + 2));
-            }
-
-            worker.ReportProgress(100, "Done Processing.");*/
+            var worker = sender as BackgroundWorker;
+            worker.ReportProgress(0);
+            Decryption decryption = new Decryption(inputFilePath,
+                outputFilePath, recipent);
+            decryption.Decrypt(worker);
+               
         }
 
-        private void worker_RunWorkerCompletedDecrytpion(object sender, RunWorkerCompletedEventArgs e)
+        private void Worker_RunWorkerCompletedDecryption(object sender, RunWorkerCompletedEventArgs e)
         {
-            MessageBox.Show("All Done!");
-            DecryptionProgress.Value = 0;
-            DecryptionTextBlock.Text = "";
+            MessageBox.Show(Globals.decryptionFinishedPopup);
+            EncryptionProgressBar.Value = 0;
+            DecryptionTextBlock.Text = Globals.statusMsgDecryptionFinished;
         }
 
 

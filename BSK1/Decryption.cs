@@ -35,13 +35,13 @@ namespace BSK1
             long headerLengthInBytes = ManageHeader();
             byte[] decryptedSessionKeyBytes = ManageRecipent();
 
-            DecryptFile(headerLengthInBytes, decryptedSessionKeyBytes);
+            DecryptFile(headerLengthInBytes, decryptedSessionKeyBytes, worker);
         }
 
         //decrypts EncryptedFile file, start reading the file at 
         //headerLengthInBytes byte
         //saves decrypted file to DecryptedFile file
-        private void DecryptFile(long headerLengthInBytes, byte[] sessionKey)
+        private void DecryptFile(long headerLengthInBytes, byte[] sessionKey, BackgroundWorker worker)
         {
             using (Aes aesAlg = Aes.Create())
             {
@@ -56,7 +56,8 @@ namespace BSK1
                 using (FileStream destination = new FileStream(DecryptedFile, FileMode.CreateNew,
                     FileAccess.Write, FileShare.None))
                 {
-                    using (CryptoStream cryptoStream = new CryptoStream(destination, decryptor, CryptoStreamMode.Write))
+                    using (CryptoStream cryptoStream =
+                        new CryptoStream(destination, decryptor, CryptoStreamMode.Write))
                     {
                         try
                         {
@@ -65,7 +66,21 @@ namespace BSK1
                             {
                                 //start reading from after header
                                 source.Position = headerLengthInBytes;
-                                source.CopyTo(cryptoStream);
+
+                                int bitsInBuffer = 64 * 1024;
+                                byte[] buffer = new byte[bitsInBuffer];//todo decide on size
+                                int data, count = 1;
+                                double progress;
+                                while ((data = source.Read(buffer, 0, buffer.Length)) > 0)
+                                {
+
+                                    cryptoStream.Write(buffer, 0, data);
+                                    progress = ((double)count * bitsInBuffer / source.Length) * 100;
+                                    worker.ReportProgress((int)progress);
+                                    count++;
+                                }
+
+
                             }
                         }
                         catch (CryptographicException exception)
@@ -76,7 +91,7 @@ namespace BSK1
                                 throw;
                         }
                     }
-                }
+                }        
             }
         }
 

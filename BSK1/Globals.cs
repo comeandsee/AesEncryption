@@ -37,7 +37,14 @@ namespace BSK1
 
         public static String Algorithm = "AES";
         public static String statusMsgEncryption = "Status: szyfrowanie";
+        public static String statusMsgDecryption = "Status: deszyfracja";
+
         public static String statusMsgEncryptionFinished = "Status: plik zaszyfrowany";
+        public static String statusMsgDecryptionFinished = "Status: plik odszyfrowany";
+
+        public static String encryptionFinishedPopup = "Szyfrowanie zakończone sukcesem";
+        public static String decryptionFinishedPopup = "Deszyfracja zakończona sukcesem";
+
 
         public static int blockSize = 128;
         public static int keySize = 128;
