@@ -54,18 +54,25 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Decryption.cs" />
-    <Compile Include="DecryptionHelpers.cs" />
-    <Compile Include="Encryption.cs" />
-    <Compile Include="EncryptionHelper.cs" />
-    <Compile Include="Globals.cs" />
+    <Compile Include="Core\Decryption.cs" />
+    <Compile Include="Helpers\DecryptionHelpers.cs" />
+    <Compile Include="Model\DecryptionInput.cs" />
+    <Compile Include="Model\DecryptionOutput.cs" />
+    <Compile Include="Core\Encryption.cs" />
+    <Compile Include="Helpers\EncryptionHelper.cs" />
+    <Compile Include="Model\EncryptionInput.cs" />
+    <Compile Include="Model\EncryptionOutput.cs" />
+    <Compile Include="Helpers\Globals.cs" />
+    <Compile Include="Parsing\InputHandlers.cs" />
     <Compile Include="InsertPswrdWindow.xaml.cs">
       <DependentUpon>InsertPswrdWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PasswordManager.cs" />
-    <Compile Include="User.cs" />
-    <Compile Include="UsersManagement.cs" />
-    <Compile Include="XmlHelpers.cs" />
+    <Compile Include="Core\PasswordManager.cs" />
+    <Compile Include="Model\RegisterInput.cs" />
+    <Compile Include="Model\RegisterOutput.cs" />
+    <Compile Include="Model\User.cs" />
+    <Compile Include="Core\UsersManagement.cs" />
+    <Compile Include="Helpers\XmlHelpers.cs" />
     <Page Include="InsertPswrdWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -101,12 +108,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="encryptedFiles\a" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="encryptedFiles\r" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

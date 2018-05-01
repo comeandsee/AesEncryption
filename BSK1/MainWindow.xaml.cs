@@ -25,11 +25,8 @@ namespace BSK1
     public partial class MainWindow : Window
     {
         private List<User> users;
-        private string inputFilePath, outputFilePath, cipherMode, fileExtension;
-        private List<User> recipents;
-        private User recipent;
-        private string obtainedPassword;
-
+        
+    
         public MainWindow()
         {
             InitializeComponent();
@@ -79,153 +76,44 @@ namespace BSK1
         }
 
 
-        private bool GetSelectedValuesFromGUIEncryption(out string inputFilePath,
-            out string outputFilePath, out string cipherMode, out string fileExtension, out List<User> recipents)
+       
+
+        private DecryptionOutput GetSelectedValuesFromGUIDecryption()
         {
-            bool readingAllOK = true;
+            //enter values from input controls to EncryptionInput object
+            DecryptionInput di = new DecryptionInput(InputFileTextBoxDecryption.Text,
+                OutputFileTextBoxDecryption.Text,
+                (User)RecipentsListBoxDecryption.SelectedItem);
 
-            //retrieve input file and output file name
-            inputFilePath = InputFileTextBox.Text;
-            if (string.IsNullOrEmpty(inputFilePath))
-            {
-                //tODO more complex error function
-                Console.WriteLine("wrong input file path");
-                readingAllOK = false;
-            }
+            DecryptionOutput decryptionOutput = 
+                InputHandlers.ParseDecryptionValues(di);
 
-            //get input file extension
-            fileExtension = System.IO.Path.GetExtension(inputFilePath);
-
-            //get output file name
-            string outputFileName = OutputFileTextBox.Text;
-            if (string.IsNullOrEmpty(outputFileName))
-            {
-                Console.WriteLine("wrong out file name");
-                readingAllOK = false;
-
-            }
-
-            if (string.IsNullOrEmpty(inputFilePath))
-            {
-                Console.WriteLine("wrong input file path");
-                outputFilePath = "error";
-                readingAllOK = false;
-            }
-            else
-            {
-                string outDirectory = System.IO.Path.GetDirectoryName(inputFilePath);
-                outputFilePath = outDirectory + "\\" + outputFileName;
-
-            }
-
-            //retrieve cipher mode
-            cipherMode = cipherModeComboBox.Text;
-            if (string.IsNullOrEmpty(cipherMode))
-            {
-                Console.WriteLine("wrong cipher mode");
-                readingAllOK = false;
-            }
-
-            //retrieve selected recipents from listbox
-            System.Collections.IList items = RecipentsListBox.SelectedItems;
-            recipents = items.Cast<User>().ToList();
-            //todo add nullcheck- now there can be a file noone can decrypt
-            return readingAllOK;
-        }
-
-        private bool GetSelectedValuesFromGUIDecryption(out string inputFilePath,
-            out string outputFilePath, out User recipent)
-        {
-            bool readingAllOK = true;
-            string outDirectory = "";
-            string decodedFileName = "";
-            outputFilePath = "";
-
-            //retrieve input file and output file name
-            inputFilePath = InputFileTextBoxDecryption.Text;
-            if (string.IsNullOrEmpty(inputFilePath))
-            {
-                //tODO more complex error function
-                Console.WriteLine("wrong input file path");
-                readingAllOK = false;
-            }
-            else
-            {
-                outDirectory = System.IO.Path.GetDirectoryName(inputFilePath);
-            }
-
-            string outputFileName = OutputFileTextBoxDecryption.Text;
-            if (string.IsNullOrEmpty(outputFileName))
-            {
-                Console.WriteLine("wrong out file name");
-                readingAllOK = false;
-
-            }
-            else
-            {
-                outputFilePath = outDirectory + "\\" + outputFileName;
-                decodedFileName = outDirectory + "\\result.txt";
-            }
-
-
-            //retrieve selected recipent of encoded file from listbox
-            recipent = (User)RecipentsListBoxDecryption.SelectedItem;
-            if (recipent == null)
-            {
-                readingAllOK = false;
-            }
-            else
-            {
-                Console.WriteLine("recipent " + recipent.Email);
-
-            }
-
-            return readingAllOK;
+            return decryptionOutput;
         }
 
 
-        private bool GetSelectedValuesFromGUIRegister(out string email,
-            out string password)
+        private RegisterOutput GetSelectedValuesFromGUIRegister()
         {
-            bool readingAllOK = true;
+            //enter values from input controls to EncryptionInput object
+            RegisterInput ri = new RegisterInput(TextBoxRegistrationEmail.Text,
+                userPassword.Password);
 
-            //retrieve email and password
-            email = TextBoxRegistrationEmail.Text;
-            if (string.IsNullOrEmpty(email))
-            {
-                Console.WriteLine("wrong email");
-                readingAllOK = false;
-            }
-            else
-            {
-                try
-                {
-                    //todo this needs polishing
-                    var addr = new System.Net.Mail.MailAddress(email);
-                    readingAllOK = (addr.Address == email);
+            RegisterOutput ro = InputHandlers.ParseRegisterValues(ri);
 
-                }
-                catch
-                {
-                    Console.WriteLine("wrong email");
-                    readingAllOK = false;
-                }
-            }
-
-
-            password = userPassword.Password;
-
-            if (!UsersManagement.PasswordCorrect(password))
-            {
-                Console.WriteLine("wrong pswd");
-                readingAllOK = false;
-                //todo an explanation 'why' needed
-            }
-
-            return readingAllOK;
+            return ro;
         }
 
-        
+        private EncryptionOutput GetSelectedValuesFromGUIEncryption()
+        {
+            //enter values from input controls to EncryptionInput object
+            EncryptionInput ei = new EncryptionInput(InputFileTextBox.Text,
+                OutputFileTextBox.Text, cipherModeComboBox.Text,
+                RecipentsListBox.SelectedItems);
+            
+            EncryptionOutput eo = InputHandlers.ParseEncryptionValues(ei);
+
+            return eo;
+        }
 
         private void EncodeButton_Click(object sender, RoutedEventArgs e)
         {
@@ -238,46 +126,52 @@ namespace BSK1
 
 
             //get values from the user (from gui)
-            bool correctInput = GetSelectedValuesFromGUIEncryption(out inputFilePath, out outputFilePath,
-                out cipherMode, out fileExtension, out recipents);
+            EncryptionOutput eo = GetSelectedValuesFromGUIEncryption();
+            bool correctInput = eo.IsInputCorrect;
+
             if (correctInput)
             {
-                worker.RunWorkerAsync();
+                worker.RunWorkerAsync(eo);
 
             }
             else
             {
-                //TODO error message about incorrect input
+                MessageBoxResult result = 
+                    MessageBox.Show(eo.ErrorMessage, 
+                    "Błędne dane wejściowe", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                
             }
 
         }
 
-       
-        //todo end of only for testing
-
+      
         private void DecodeButton_Click(object sender, RoutedEventArgs e)
         {
-            
-
             //get values from the user (from gui)
-            //todo setting global var recipent, inputfilepath and outputfilepath here
-            bool correctInput = GetSelectedValuesFromGUIDecryption(out inputFilePath, out outputFilePath, out recipent);
+            //todo setting global var here, watch out
+            DecryptionOutput decryptionOutput = 
+                GetSelectedValuesFromGUIDecryption();
+
+            bool correctInput = decryptionOutput.IsInputCorrect;
             if (correctInput)
             {
-                AskForRecipentPassword(recipent);
+                AskForRecipentPassword(decryptionOutput);
 
             }
             else
             {
-                //TODO error message about incorrect input
+                MessageBoxResult result =
+                    MessageBox.Show(decryptionOutput.ErrorMessage,
+                    "Błędne dane wejściowe", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
 
         }
 
         //opens a dialog asking for password of selected recipent
-        private void AskForRecipentPassword(User recipent)
+        private void AskForRecipentPassword(DecryptionOutput decryptionOutput)
         {
-            InsertPswrdWindow insertPswrdWindow = new InsertPswrdWindow(recipent.Email);
+            InsertPswrdWindow insertPswrdWindow = 
+                new InsertPswrdWindow(decryptionOutput);
 
             insertPswrdWindow.Show();
             insertPswrdWindow.Owner = this;
@@ -286,29 +180,27 @@ namespace BSK1
 
         //called by second window when user password is obtained
         //upon that decryption can be performed
-        public void OnUserPasswordGiven(string password)
+        public void OnUserPasswordGiven(DecryptionOutput decryptionOutput)
         {
-
             // progress bar config
             BackgroundWorker worker = new BackgroundWorker();
             worker.WorkerReportsProgress = true;
             worker.RunWorkerCompleted += Worker_RunWorkerCompletedDecryption;
             worker.DoWork += Worker_DoWorkDecryption;
             worker.ProgressChanged += Worker_ProgressChangedDecryption;
-
-            //set obtained password
-            obtainedPassword = password;
+                        
             //start decryption
-            worker.RunWorkerAsync();
+            worker.RunWorkerAsync(decryptionOutput);
 
         }
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-            bool correctInput = GetSelectedValuesFromGUIRegister(out string email, out string password);
+            RegisterOutput ro = GetSelectedValuesFromGUIRegister();
+            bool correctInput = ro.IsInputCorrect;
             if (correctInput)
             {
-                User newUser = UsersManagement.AddUser(email, password);
+                User newUser = UsersManagement.AddUser(ro.Email, ro.Password);
                 users.Add(newUser);
 
                 //refresh all listboxes to show also newly added user
@@ -324,9 +216,9 @@ namespace BSK1
             }
             else
             {
-                resultTextBlockRegister.Text = "błąd rejestracji";
-
-                //TODO error message about incorrect input
+                MessageBoxResult result =
+                    MessageBox.Show(ro.ErrorMessage,
+                    "Błędne dane wejściowe", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
 
         }
@@ -342,8 +234,10 @@ namespace BSK1
             var worker = sender as BackgroundWorker;
             worker.ReportProgress(0);
 
-            Encryption encryption = new Encryption(inputFilePath, outputFilePath,
-                Globals.blockSize, cipherMode, fileExtension, recipents);
+            EncryptionOutput eo = (EncryptionOutput)e.Argument;
+
+            Encryption encryption = new Encryption(eo.InputFilePath, eo.OutputFilePath,
+                Globals.blockSize, eo.CipherMode, eo.FileExtension, eo.Recipents);
             
             encryption.GenerateEncodedFile(worker);
 
@@ -368,9 +262,11 @@ namespace BSK1
         {
             var worker = sender as BackgroundWorker;
             worker.ReportProgress(0);
-            Decryption decryption = new Decryption(inputFilePath,
-                outputFilePath, recipent);
-            decryption.Decrypt(worker, obtainedPassword);
+
+            DecryptionOutput decryptionOutput = (DecryptionOutput)e.Argument;
+
+            Decryption decryption = new Decryption(decryptionOutput);
+            decryption.Decrypt(worker);
                
         }
 

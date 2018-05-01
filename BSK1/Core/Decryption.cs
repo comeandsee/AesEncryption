@@ -12,28 +12,23 @@ namespace BSK1
 {
     public class Decryption
     {
-        public Decryption(string encryptedFile, 
-            string decryptedFile, User selectedUser)
+        DecryptionOutput DecryptionOutput { get; set; }
+        public Decryption(DecryptionOutput decryptionOutput)
         {
-            EncryptedFile = encryptedFile;
-            DecryptedFile = decryptedFile;
-            SelectedUser = selectedUser;
+            DecryptionOutput = decryptionOutput;
         }
-
-        public string EncryptedFile { get; set; }
-        public string DecryptedFile { get; set; }
-        public User SelectedUser { get; set; }
-
+        
         public int BlockSize { get; set; }
         public CipherMode CipherMode { get; set; }
         public string FileExtension { get; set; }
         public Dictionary<string, string> RecipentsEmailSessionKey { get; set; }
         public byte[] IV { get; set; }
 
-        public void Decrypt(BackgroundWorker worker, string obtainedPassword)
+        public void Decrypt(BackgroundWorker worker)
         {
             long headerLengthInBytes = ManageHeader();
-            byte[] decryptedSessionKeyBytes = ManageRecipent(obtainedPassword);
+            byte[] decryptedSessionKeyBytes = 
+                ManageRecipent(DecryptionOutput.ObtainedPassword);
 
             try
             {
@@ -50,8 +45,10 @@ namespace BSK1
         //based on: https://stackoverflow.com/questions/3914445/how-to-write-contents-of-one-file-to-another-file
         private void GenerateWrongFile(long headerLengthInBytes, BackgroundWorker worker)
         {
-            using (FileStream stream = File.OpenRead(EncryptedFile))
-            using (FileStream writeStream = File.OpenWrite(DecryptedFile))
+            using (FileStream stream = File.OpenRead(
+                DecryptionOutput.EncryptedFile))
+            using (FileStream writeStream = File.OpenWrite(
+                DecryptionOutput.DecryptedFile))
             {
                 //start reading from after the header
                 stream.Position = headerLengthInBytes;
@@ -92,7 +89,8 @@ namespace BSK1
                 ICryptoTransform decryptor = aesAlg.CreateDecryptor();
 
                 //based on: https://stackoverflow.com/questions/9237324/encrypting-decrypting-large-files-net
-                using (FileStream destination = new FileStream(DecryptedFile, FileMode.CreateNew,
+                using (FileStream destination = new FileStream(
+                    DecryptionOutput.DecryptedFile, FileMode.CreateNew,
                     FileAccess.Write, FileShare.None))
                 {
                     using (CryptoStream cryptoStream =
@@ -100,7 +98,8 @@ namespace BSK1
                     {
                         try
                         {
-                            using (FileStream source = new FileStream(EncryptedFile, FileMode.Open,
+                            using (FileStream source = new FileStream(
+                                DecryptionOutput.EncryptedFile, FileMode.Open,
                                 FileAccess.Read, FileShare.Read))
                             {
                                 //start reading from after header
@@ -148,7 +147,7 @@ namespace BSK1
             bool userIsAuthorizedToDecrypt = false;
             foreach (KeyValuePair<string, string> emailKey in RecipentsEmailSessionKey)
             {
-                if (emailKey.Key.Equals(SelectedUser.Email))
+                if (emailKey.Key.Equals(DecryptionOutput.Recipent.Email))
                 {
                     encryptedSessionKeyString = emailKey.Value;
                     userIsAuthorizedToDecrypt = true;
@@ -166,7 +165,7 @@ namespace BSK1
 
             //decrypt session key using user's private key
             string userPrivateKeyString = 
-                UsersManagement.GetUserPrivateKey(SelectedUser.Email, obtainedPassword);
+                UsersManagement.GetUserPrivateKey(DecryptionOutput.Recipent.Email, obtainedPassword);
             
             byte[] decryptedSessionKeyBytes = 
                 EncryptionHelper.DecryptSessionKeyFromString(encryptedSessionKeyString, userPrivateKeyString);
@@ -183,7 +182,7 @@ namespace BSK1
         {
             //get xml header from EncryptedFile
             string xmlHeaderString =
-                XmlHelpers.RetrieveXmlHeaderFromFile(EncryptedFile);
+                XmlHelpers.RetrieveXmlHeaderFromFile(DecryptionOutput.EncryptedFile);
 
             //parse data from header
             XmlHelpers.ReadDataFromXMLHeader(xmlHeaderString,
@@ -198,9 +197,10 @@ namespace BSK1
             IV = Convert.FromBase64String(iv);
             RecipentsEmailSessionKey = recipents;
             FileExtension = fileExtension;
-            DecryptedFile += FileExtension;
+            DecryptionOutput.DecryptedFile += FileExtension;
 
-            long headerLengthInBytes = DecryptionHelpers.GetHeaderLength(EncryptedFile);
+            long headerLengthInBytes = 
+                DecryptionHelpers.GetHeaderLength(DecryptionOutput.EncryptedFile);
 
             return headerLengthInBytes;           
 

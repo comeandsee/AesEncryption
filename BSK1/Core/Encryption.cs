@@ -118,12 +118,24 @@ namespace BSK1
                 aesAlg.Mode = CipherMode;
                 aesAlg.BlockSize = BlockSize;
 
+
                 //set initialization vector
                 aesAlg.GenerateIV();
                 //todo this is not pretty, is it
                 IV = (aesAlg.IV).ToArray();
+
                 
-                ICryptoTransform encryptor = aesAlg.CreateEncryptor();
+                ICryptoTransform encryptor;
+                try
+                {
+                    encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+                }catch(CryptographicException e)
+                {
+                   
+                    Console.WriteLine(e.Message);
+                    Console.WriteLine(e.StackTrace);
+                    return;
+                }
 
                 //based on: https://stackoverflow.com/questions/9237324/encrypting-decrypting-large-files-net
                 using (FileStream destFileStream = 

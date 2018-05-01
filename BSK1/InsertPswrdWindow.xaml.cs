@@ -19,16 +19,19 @@ namespace BSK1
     /// </summary>
     public partial class InsertPswrdWindow : Window
     {
-        public InsertPswrdWindow(string userName)
+        private DecryptionOutput DecryptionOutput { get; set; }
+        public InsertPswrdWindow(DecryptionOutput decryptionOutput)
         {
             InitializeComponent();
-            labelUserName.Content = userName;
+            DecryptionOutput = decryptionOutput;
+            labelUserName.Content = decryptionOutput.Recipent.Email;
 
         }
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            ((MainWindow)this.Owner).OnUserPasswordGiven(userPassword.Password.ToString());
+            DecryptionOutput.ObtainedPassword = userPassword.Password.ToString();
+            ((MainWindow)this.Owner).OnUserPasswordGiven(DecryptionOutput);
             Close();
         }
 
