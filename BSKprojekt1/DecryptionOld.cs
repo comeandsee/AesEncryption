@@ -9,16 +9,21 @@ namespace BSKprojekt1
 {
     public static class Decryption
     {
-        public static void DecryptFile(string filePath, string decodedFileName, User selectedUser)
+        public static void DecryptFile(EncryptionObject eo, string filePath, string decodedFileName, User selectedUser)
         {
             Console.WriteLine("decrypting");
-            XmlHelpers.RetrieveXmlHeaderFromFile(filePath, out string xmlHeaderString, out long headerByteLength);
+
+            //todo temp
+            /*string tempEncodedFilePath = "tempEncodedContents";
+            XmlHelpers.RetrieveXmlHeaderFromFile(filePath, out string xmlHeaderString, tempEncodedFilePath);
 
             XmlHelpers.ReadDataFromXMLHeader(xmlHeaderString,
                 out string algorithm, out string keySize,
                 out string blockSize, out string cipherMode,
                 out string iv, out Dictionary<string, string> recipents,
                 out string fileExtension);
+
+    */
             //recipents are kept in a dictionary as 
             //<recipentEmail, encryptedUserSessionKey> pairs
 
@@ -28,7 +33,9 @@ namespace BSKprojekt1
             //and decrypt the key using user's private key
 
             //todo maybe set to some noise, so that if foreach doesn't find anything, the decoding will work and produce noise-file
-            string encryptedSessionKeyString ="aaaa";
+
+            //todo temp
+            /*string encryptedSessionKeyString ="aaaa";
             foreach(KeyValuePair<string, string> emailKey in recipents)
             {
                 if (emailKey.Key.Equals(selectedUser.Email))
@@ -38,14 +45,30 @@ namespace BSKprojekt1
                 }
             }
 
-            //encrypt session key using user's private key
+            //decrypt session key using user's private key
+            string userPrivateKeyString = UsersManagement.GetUserPrivateKeyFromFile(selectedUser.Email);
+            
+            byte[] decryptedSessionKeyByte = EncryptionHelper.DecryptSessionKeyFromString(encryptedSessionKeyString, userPrivateKeyString);
+            */
+
+            //todo temp to remove
             string userPrivateKeyString = UsersManagement.GetUserPrivateKeyFromFile(selectedUser.Email);
 
-            byte[] decryptedSessionKeyByte = EncryptionHelper.DecryptSessionKeyFromString(encryptedSessionKeyString, userPrivateKeyString);
+            byte[] decryptedSessionKeyByte = EncryptionHelper.DecryptSessionKeyFromString(eo.encryptedSessionKey, userPrivateKeyString);
+            Console.WriteLine("private key of " + selectedUser.Email + " is " + userPrivateKeyString);
 
-
-            //set cipher mode
             CipherMode mode = CipherMode.CBC;
+
+            EncryptionHelper.AesDecryptToFile(filePath,
+                decodedFileName + ".txt",
+                decryptedSessionKeyByte, mode, eo.blockSize,
+                Convert.FromBase64String(eo.ivString));
+
+        
+            //set cipher mode
+            //todo uncomment
+            /*CipherMode mode = CipherMode.CBC;
+
             switch (cipherMode)
             {
                 case Globals.modeCBC:
@@ -63,9 +86,11 @@ namespace BSKprojekt1
 
             }
             
-            EncryptionHelper.AesDecryptToFile(filePath, 
-                decodedFileName + fileExtension, decryptedSessionKeyByte, mode, Int32.Parse(keySize), Convert.FromBase64String(iv));
-                
+            EncryptionHelper.AesDecryptToFile(tempEncodedFilePath, 
+                decodedFileName + fileExtension, 
+                decryptedSessionKeyByte, mode, Int32.Parse(keySize), //not key size, should be block size!
+                Convert.FromBase64String(iv));
+                */
         }
     }
 }

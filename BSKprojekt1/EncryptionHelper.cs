@@ -12,9 +12,33 @@ namespace BSKprojekt1
 {
     public static class EncryptionHelper
     {
-        //based on https://msdn.microsoft.com/pl-pl/library/system.security.cryptography.aes(v=vs.110).aspx
-        //encrypts file from path srcFileName to file in path destFileName
-        public static void AesEncryptFromFile(string srcFileName, string destFileName, 
+
+        public static CipherMode CipherModeFromString(string stringMode)
+        {
+            CipherMode mode = CipherMode.CBC;
+            switch (stringMode)
+            {
+                case Globals.modeCBC:
+                    mode = CipherMode.CBC;
+                    break;
+                case Globals.modeCFB:
+                    mode = CipherMode.CFB;
+                    break;
+                case Globals.modeECB:
+                    mode = CipherMode.ECB;
+                    break;
+                case Globals.modeOFB:
+                    mode = CipherMode.OFB;
+                    break;
+            }
+
+            return mode;
+        }
+
+
+    //based on https://msdn.microsoft.com/pl-pl/library/system.security.cryptography.aes(v=vs.110).aspx
+    //encrypts file from path srcFileName to file in path destFileName
+    public static void AesEncryptFromFile(string srcFileName, string destFileName, 
             byte[] key, CipherMode mode, int blockSize, out byte[] IV, BackgroundWorker worker)
         {
             using(Aes aesAlg = Aes.Create())
@@ -23,6 +47,7 @@ namespace BSKprojekt1
                 aesAlg.GenerateIV();
                 aesAlg.Mode = mode;
                 aesAlg.BlockSize = blockSize;
+                //aesAlg.Padding = PaddingMode.Zeros;
 
                 IV = (aesAlg.IV).ToArray();
                 
@@ -88,10 +113,13 @@ namespace BSKprojekt1
 
                                 }
                             }*/
-                        }
-                    }
+            }
+         }
 
-        public static void AesDecryptToFile(string encodedFileName, string decodedFileName, byte[] sessionKey, CipherMode mode, int blockSize, byte[] IV)
+        //headerByteLength- offset after which the encoded file in encodedFileName starts
+        public static void AesDecryptToFile(string encodedFileName, 
+            string decodedFileName, byte[] sessionKey, CipherMode mode, 
+            int blockSize, byte[] IV)
         {
             using(Aes aesAlg = Aes.Create())
             {
@@ -99,6 +127,7 @@ namespace BSKprojekt1
                 aesAlg.Mode = mode;
                 aesAlg.BlockSize = blockSize;
                 aesAlg.IV = IV;
+                //aesAlg.Padding = PaddingMode.Zeros;
 
                 ICryptoTransform decryptor = aesAlg.CreateDecryptor();
 
@@ -113,6 +142,7 @@ namespace BSKprojekt1
                             using (FileStream source = new FileStream(encodedFileName, FileMode.Open, 
                                 FileAccess.Read, FileShare.Read))
                             {
+                                //source.CopyTo(destination);
                                 
                                 source.CopyTo(cryptoStream);
                             }

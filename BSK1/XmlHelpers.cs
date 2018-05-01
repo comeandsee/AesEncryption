@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace BSKprojekt1
+namespace BSK1
 {
     //TODO- make it as linq to xml
     //at the moment it doesn't work good with users in the header
     //it nests next user in the previous one- make it right somehow
     public static class XmlHelpers
     {
-        
+
         public static void GenerateXMLHeader(string outputFileName, string algorithm,
             string keySize, string blockSize, string cipherMode, string iv, Dictionary<string, string> recipents,
             String fileExtension)
         {
-            
+
             //create all main nodes
             XElement algoElem = new XElement(Globals.XmlAlgorithm, algorithm);
             XElement keySizeElem = new XElement(Globals.XmlKeySize, keySize);
@@ -55,98 +55,59 @@ namespace BSKprojekt1
                 new XDeclaration("1.0", "utf-8", "yes"),
                 mainNode);
 
-            
+
             xDoc.Save(outputFileName);
-            
-        
+
+
         }
 
 
-        public static void RetrieveXmlHeaderFromFile(string filePath, out string xmlHeaderString, string tempEncodedFilePath)
+        public static string RetrieveXmlHeaderFromFile(string encryptedFile)
         {
+            string xmlHeaderString = "";
+
             StringBuilder sb = new StringBuilder();
             int bufferSize = 128;
-            xmlHeaderString = "";
             bool readingHeader = true;
 
-            using (var fileStream = File.OpenRead(filePath))
+            using (var fileStream = File.OpenRead(encryptedFile))
             {
                 using (var streamReader = new StreamReader(fileStream, Encoding.UTF8, true, bufferSize))
                 {
                     String line;
-                    while (readingHeader && (line = streamReader.ReadLine()) != null) {
+                    while (readingHeader && (line = streamReader.ReadLine()) != null)
+                    {
                         //we are before the new line separating header and encoded file
                         //so add that line (of header) to header string
                         sb.Append(line);
+
+
                         if (string.IsNullOrWhiteSpace(line))
                         {
                             //we have reached the new line, so the whole header is read
                             readingHeader = false;
                             xmlHeaderString = sb.ToString();
 
-                            //copy the encoded file to temporary file
-                            /*using (
-                                var sw = new StreamWriter(
-                                    new FileStream(tempEncodedFilePath, FileMode.Open, FileAccess.ReadWrite),
-                                    Encoding.UTF8
-                                )
-                            )
-                            {
-                                sw.Write(streamReader.ReadToEnd());
-                            }*/
-                            /*
-                            using (var writer = new StreamWriter(tempEncodedFilePath))
-                            {
-                                writer.Write(streamReader.ReadToEnd());
-                            }*/
+                           
                         }
 
                     }
-                    using (var sw = new StreamWriter(
-                            new FileStream(tempEncodedFilePath, FileMode.Open, FileAccess.ReadWrite),
-                            Encoding.UTF8))
-                    {
-                        while ((line = streamReader.ReadLine()) != null)
-                        {
-                            sw.WriteLine(line);
-                        }
-                    }
-            
                     
-
-
-                        /*
-                        bool stop = false;
-                        String line;
-                        while (!stop && (line = streamReader.ReadLine()) != null)
-                        {
-                            sb.Append(line);
-                            if (string.IsNullOrWhiteSpace(line))
-                            {
-                                stop = true;
-                                headerByteLength = streamReader.BaseStream.Position;
-
-
-
-
-                            }
-
-                        }
-                        xmlHeaderString = sb.ToString();*/
-                    }
                 }
+            }
+            return xmlHeaderString;
         }
 
         public static void ReadDataFromXMLHeader(string xmlHeaderString,
-            out string algorithm, out string keySize, out string blockSize, 
-            out string cipherMode, out string iv, 
+            out string algorithm, out string keySize, out string blockSize,
+            out string cipherMode, out string iv,
             out Dictionary<string, string> recipents,
             out string fileExtension)
         {
-            
+
             XmlDocument doc = new XmlDocument();
             doc.LoadXml(xmlHeaderString);
-            
+
             algorithm = doc.DocumentElement
                 .SelectSingleNode("/" + Globals.XmlMainElement + "/" + Globals.XmlAlgorithm).InnerText;
 
@@ -165,13 +126,13 @@ namespace BSKprojekt1
             fileExtension = doc.DocumentElement
                 .SelectSingleNode("/" + Globals.XmlMainElement + "/" + Globals.XmlExtension).InnerText;
 
-            
+
             recipents = new Dictionary<string, string>();
             //todo maaybe check if there are any?
             string userEmail, encryptedUserSessionKey;
             XmlNode recipentsNode = doc.DocumentElement
                 .SelectSingleNode("/" + Globals.XmlMainElement + "/" + Globals.XmlApprovedUsers);
-            foreach(XmlNode recipentNode in recipentsNode.ChildNodes)
+            foreach (XmlNode recipentNode in recipentsNode.ChildNodes)
             {
                 userEmail = recipentNode[Globals.XmlEmail].InnerText;
                 encryptedUserSessionKey = recipentNode[Globals.XmlSessionKey].InnerText;

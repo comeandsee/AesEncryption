@@ -11,8 +11,8 @@ namespace BSKprojekt1
 {
     public static class Encryption
     {
-        public static void GenerateEncodedFile(string inputFilePath, 
-            string outputFilePath, int blockSize, string cipherMode, 
+        public static EncryptionObject GenerateEncodedFile(string inputFilePath, 
+            string outputFilePath, int blockSize, string cipherModeString, 
             string fileExtension, List<User> recipents,
             BackgroundWorker worker)
         {
@@ -29,10 +29,14 @@ namespace BSKprojekt1
 
             string tempEncodedFile = "tempEncoded.xml";
 
+            CipherMode cipherMode = EncryptionHelper.CipherModeFromString(cipherModeString);
+
             //encrypting input file and saving it in destined out file
             using (Aes myAes = Aes.Create())
             {
-                EncryptionHelper.AesEncryptFromFile(inputFilePath, tempEncodedFile, myAes.Key, myAes.Mode, myAes.BlockSize, out IV, worker);
+                EncryptionHelper.AesEncryptFromFile(inputFilePath, tempEncodedFile, sessionKey, cipherMode, blockSize, out IV, worker);
+
+                //EncryptionHelper.AesEncryptFromFile(inputFilePath, tempEncodedFile, myAes.Key, myAes.Mode, myAes.BlockSize, out IV, worker);
                 //Encryption.DecryptToFile(pathToOutFile, decodedFileName, myAes.Key, myAes.Mode, myAes.BlockSize, IV);
             }
 
@@ -40,10 +44,20 @@ namespace BSKprojekt1
 
             string tempFileWithHeader = "tempHeader.xml";
             XmlHelpers.GenerateXMLHeader(tempFileWithHeader, Globals.Algorithm,
-                keySizeBits.ToString(), blockSize.ToString(), cipherMode, ivString, recipentsKeysDict, fileExtension);
+                keySizeBits.ToString(), blockSize.ToString(), cipherModeString, ivString, recipentsKeysDict, fileExtension);
 
+            //todo now only encoded text in file (no header)
             MergeHeaderAndEncodedContentIntoOutputFile(outputFilePath, tempFileWithHeader, tempEncodedFile);
 
+            //todo temp
+            EncryptionObject eo = new EncryptionObject();
+            eo.blockSize = blockSize;
+            eo.ivString = ivString;
+
+            recipentsKeysDict.TryGetValue(recipents.First().Email, out string  encSessionKey);
+            Console.WriteLine("enc session key " + encSessionKey);
+            eo.encryptedSessionKey = encSessionKey;
+            return eo;
         }
 
         //combines contents from headerFile and encodedFile to outputFile 
@@ -52,7 +66,8 @@ namespace BSKprojekt1
 
             using (Stream destStream = File.Create(outputFile))
             {
-                using (Stream srcStream = File.OpenRead(headerFile))
+                //todo commented out adding a header
+                /*using (Stream srcStream = File.OpenRead(headerFile))
                 {
                     srcStream.CopyTo(destStream);
                 }
@@ -61,7 +76,7 @@ namespace BSKprojekt1
                 byte[] newLine = Encoding.UTF8.GetBytes(Environment.NewLine);
                 destStream.Write(newLine, 0, 1);
                 destStream.Write(newLine, 0, 1);
-
+                */
                 using (Stream srcStream = File.OpenRead(encodedFile))
                 {
                     srcStream.CopyTo(destStream);

@@ -1,9 +1,10 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,23 +15,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Xml;
-using System.IO;
-using System.ComponentModel;
-using System.Threading;
+using Microsoft.Win32;
 
-namespace BSKprojekt1
+namespace BSK1
 {
     /// <summary>
-    /// Logika interakcji dla klasy MainWindow.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
         private List<User> users;
-
-        //todo temp
-        private EncryptionObject eo;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -38,10 +32,13 @@ namespace BSKprojekt1
             PrepareAppUsers();
         }
 
+      
+            
+
         private void TestClassbtn_Click(object sender, RoutedEventArgs e)
         {
-           // Encryption.GenerateEncodedFile(inputFilePath, outputFilePath,
-             //   Globals.blockSize, cipherMode, fileExtension, recipents, worker);
+            // Encryption.GenerateEncodedFile(inputFilePath, outputFilePath,
+            //   Globals.blockSize, cipherMode, fileExtension, recipents, worker);
 
         }
 
@@ -63,7 +60,7 @@ namespace BSKprojekt1
             RecipentsListBoxDecryption.ItemsSource = users;
             RecipentsListViewRegister.ItemsSource = users;
         }
-        
+
         private void SelectInputFileButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -83,7 +80,7 @@ namespace BSKprojekt1
                 InputFileTextBoxDecryption.Text = openFileDialog.FileName;
             }
         }
-        
+
 
         private bool GetSelectedValuesFromGUIEncryption(out string inputFilePath,
             out string outputFilePath, out string cipherMode, out string fileExtension, out List<User> recipents)
@@ -100,7 +97,7 @@ namespace BSKprojekt1
             }
 
             //get input file extension
-            fileExtension= System.IO.Path.GetExtension(inputFilePath);
+            fileExtension = System.IO.Path.GetExtension(inputFilePath);
 
             //get output file name
             string outputFileName = OutputFileTextBox.Text;
@@ -123,7 +120,7 @@ namespace BSKprojekt1
                 outputFilePath = outDirectory + "\\" + outputFileName;
 
             }
-                        
+
             //retrieve cipher mode
             cipherMode = cipherModeComboBox.Text;
             if (string.IsNullOrEmpty(cipherMode))
@@ -140,7 +137,7 @@ namespace BSKprojekt1
         }
 
         private bool GetSelectedValuesFromGUIDecryption(out string inputFilePath,
-            out string outputFilePath,  out User recipent)
+            out string outputFilePath, out User recipent)
         {
             bool readingAllOK = true;
             string outDirectory = "";
@@ -172,11 +169,11 @@ namespace BSKprojekt1
                 outputFilePath = outDirectory + "\\" + outputFileName;
                 decodedFileName = outDirectory + "\\result.txt";
             }
-            
+
 
             //retrieve selected recipent of encoded file from listbox
             recipent = (User)RecipentsListBoxDecryption.SelectedItem;
-            if(recipent == null)
+            if (recipent == null)
             {
                 readingAllOK = false;
             }
@@ -191,7 +188,7 @@ namespace BSKprojekt1
 
 
         private bool GetSelectedValuesFromGUIRegister(out string email,
-           out string password)
+            out string password)
         {
             bool readingAllOK = true;
 
@@ -209,7 +206,7 @@ namespace BSKprojekt1
                     //todo this needs polishing
                     var addr = new System.Net.Mail.MailAddress(email);
                     readingAllOK = (addr.Address == email);
-                    
+
                 }
                 catch
                 {
@@ -227,7 +224,7 @@ namespace BSKprojekt1
                 readingAllOK = false;
                 //todo an explanation 'why' needed
             }
-            
+
             return readingAllOK;
         }
 
@@ -242,11 +239,11 @@ namespace BSKprojekt1
             worker.RunWorkerCompleted += Worker_RunWorkerCompletedEncryption;
             worker.DoWork += Worker_DoWorkEncryption;
             worker.ProgressChanged += Worker_ProgressChangedEncryption;
-            
+
 
             //get values from the user (from gui)
             bool correctInput = GetSelectedValuesFromGUIEncryption(out inputFilePath, out outputFilePath,
-              out cipherMode, out fileExtension, out recipents);
+                out cipherMode, out fileExtension, out recipents);
             if (correctInput)
             {
                 worker.RunWorkerAsync();
@@ -259,39 +256,35 @@ namespace BSKprojekt1
 
         }
 
-        //TODO only for testing
-        private void testbtn_Click(object sender, RoutedEventArgs e)
-        {
-            /*Console.WriteLine("no klikam"); 
-            string filePath = "C:\\Users\\Zbigniew\\Desktop\\dieta2";
-            string decodedFilePath = "C:\\Users\\Zbigniew\\Desktop\\output";
-            Decryption.DecryptFile(filePath, decodedFilePath, );*/
-
-        }
+       
         //todo end of only for testing
 
         private void DecodeButton_Click(object sender, RoutedEventArgs e)
         {
             // progress bar config
-           /* BackgroundWorker worker1 = new BackgroundWorker();
-            worker1.RunWorkerCompleted += worker_RunWorkerCompletedDecrytpion;
-            worker1.WorkerReportsProgress = true;
-            worker1.DoWork += worker_DoWorkDecrytpion;     // tu trzeba zmienic zeby ten progres szedl inaczej xd
-            worker1.ProgressChanged += worker_ProgressChangedDecrytpion;
-            worker1.RunWorkerAsync();
-            */
+            BackgroundWorker worker = new BackgroundWorker();
+            worker.RunWorkerCompleted += worker_RunWorkerCompletedDecrytpion;
+            worker.WorkerReportsProgress = true;
+            worker.DoWork += worker_DoWorkDecrytpion;     // tu trzeba zmienic zeby ten progres szedl inaczej xd
+            worker.ProgressChanged += worker_ProgressChangedDecrytpion;
+            //worker.RunWorkerAsync();
+                
             string inputFilePath, outputFilePath;
             User recipent;
 
             bool correctInput = GetSelectedValuesFromGUIDecryption(out inputFilePath, out outputFilePath, out recipent);
             if (correctInput)
             {
-                Decryption.DecryptFile(eo, inputFilePath, outputFilePath, recipent); 
+                Decryption decryption = new Decryption(inputFilePath,
+                    outputFilePath, recipent);
+                decryption.Decrypt(worker);
+                //Decryption.DecryptFile(eo, inputFilePath, outputFilePath, recipent);
 
             }
             else
             {
                 //TODO error message about incorrect input
+                Console.WriteLine("incorrect input, doing nothing");
             }
 
         }
@@ -334,9 +327,13 @@ namespace BSKprojekt1
             var worker = sender as BackgroundWorker;
 
             worker.ReportProgress(0);
-            eo = Encryption.GenerateEncodedFile(inputFilePath, outputFilePath,
-                Globals.blockSize, cipherMode, fileExtension, recipents, worker);
-                       
+
+            Encryption encryption = new Encryption(inputFilePath, outputFilePath,
+                Globals.blockSize, cipherMode, fileExtension, recipents);
+            
+
+            encryption.GenerateEncodedFile(worker);
+
         }
 
         private void Worker_RunWorkerCompletedEncryption(object sender, RunWorkerCompletedEventArgs e)
@@ -346,7 +343,7 @@ namespace BSKprojekt1
             ProgressTextBlock.Text = Globals.statusMsgEncryptionFinished;
         }
 
-       
+
 
         private void worker_ProgressChangedDecrytpion(object sender, ProgressChangedEventArgs e)
         {
@@ -356,7 +353,7 @@ namespace BSKprojekt1
 
         private void worker_DoWorkDecrytpion(object sender, DoWorkEventArgs e)
         {
-            var worker = sender as BackgroundWorker;
+            /*var worker = sender as BackgroundWorker;
             worker.ReportProgress(0, String.Format("Processing 1."));
             for (int i = 0; i < 10; i++)
             {
@@ -364,7 +361,7 @@ namespace BSKprojekt1
                 worker.ReportProgress((i + 1) * 10, String.Format("Processing  {0}.", i + 2));
             }
 
-            worker.ReportProgress(100, "Done Processing.");
+            worker.ReportProgress(100, "Done Processing.");*/
         }
 
         private void worker_RunWorkerCompletedDecrytpion(object sender, RunWorkerCompletedEventArgs e)
@@ -374,7 +371,8 @@ namespace BSKprojekt1
             DecryptionTextBlock.Text = "";
         }
 
-        
+
     }
 }
+
 
