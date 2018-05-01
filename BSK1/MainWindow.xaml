@@ -25,9 +25,9 @@
                     </ComboBox>
                     <Label x:Name="label1_Copy" Content="Wybierz rodzaj szyfrowania:" HorizontalAlignment="Left" Margin="5,145,0,0" VerticalAlignment="Top" Grid.ColumnSpan="7" Width="188"/>
                     <Button x:Name="EncodeButton" Content="Szyfruj" HorizontalAlignment="Left" Margin="5,247,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="-0.171,0.604" Click="EncodeButton_Click" Grid.ColumnSpan="4"/>
-                    <ListBox x:Name="RecipentsListBox" SelectionMode="Multiple" HorizontalAlignment="Left" Height="106" VerticalAlignment="Top" Width="313" Grid.Column="6" Margin="275.433,117,0,0"/>
-                    <Label x:Name="label1_Copy1" Content="Wybierz odbiorców pliku" HorizontalAlignment="Left" Margin="275.433,86,0,0" VerticalAlignment="Top" Width="188" Grid.Column="6" RenderTransformOrigin="0.677,0.457"/>
-                    <ProgressBar x:Name="EncryptionProgressBar" x:FieldModifier="public" HorizontalAlignment="Left" Height="10" Margin="5,286,0,0" VerticalAlignment="Top" Width="100" Grid.ColumnSpan="5" />
+                    <ListBox x:Name="RecipentsListBox" SelectionMode="Multiple" HorizontalAlignment="Left" Height="106" VerticalAlignment="Top" Width="313" Margin="384,117,0,0"/>
+                    <Label x:Name="label1_Copy1" Content="Wybierz odbiorców pliku" HorizontalAlignment="Left" Margin="384,86,0,0" VerticalAlignment="Top" Width="188" RenderTransformOrigin="0.677,0.457"/>
+                    <ProgressBar x:Name="EncryptionProgressBar" x:FieldModifier="public" HorizontalAlignment="Left" Height="13" Margin="5,283,0,0" VerticalAlignment="Top" Width="100" />
                     <TextBlock Name="ProgressTextBlock" Text="Status: wybierz plik i dane do szyfrowania"  HorizontalAlignment="Left" Margin="5,301,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" RenderTransformOrigin="-1.238,3.744" Height="21" Width="312"/>
                     <TextBlock Name="resultTextBlock" Text=""  HorizontalAlignment="Left" Margin="38,283,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" RenderTransformOrigin="-1.238,3.744" Grid.ColumnSpan="3" Height="16" Width="65" Grid.Column="4"/>
 

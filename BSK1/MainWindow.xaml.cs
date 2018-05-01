@@ -28,6 +28,7 @@ namespace BSK1
         private string inputFilePath, outputFilePath, cipherMode, fileExtension;
         private List<User> recipents;
         private User recipent;
+        private string obtainedPassword;
 
         public MainWindow()
         {
@@ -44,12 +45,13 @@ namespace BSK1
             Directory.CreateDirectory(Globals.AppMainDirPath);
             Directory.CreateDirectory(Globals.PathToPrivateKeysDir);
 
+            Console.WriteLine(Globals.AppMainDirPath);
         }
 
         private void PrepareAppUsers()
         {
             users = UsersManagement.GetUsersListFromFile();
-
+           
             //set listbox to display all users (as potential recipents of encrypted data)
             RecipentsListBox.ItemsSource = users;
             RecipentsListBoxDecryption.ItemsSource = users;
@@ -255,6 +257,38 @@ namespace BSK1
 
         private void DecodeButton_Click(object sender, RoutedEventArgs e)
         {
+            
+
+            //get values from the user (from gui)
+            //todo setting global var recipent, inputfilepath and outputfilepath here
+            bool correctInput = GetSelectedValuesFromGUIDecryption(out inputFilePath, out outputFilePath, out recipent);
+            if (correctInput)
+            {
+                AskForRecipentPassword(recipent);
+
+            }
+            else
+            {
+                //TODO error message about incorrect input
+            }
+
+        }
+
+        //opens a dialog asking for password of selected recipent
+        private void AskForRecipentPassword(User recipent)
+        {
+            InsertPswrdWindow insertPswrdWindow = new InsertPswrdWindow(recipent.Email);
+
+            insertPswrdWindow.Show();
+            insertPswrdWindow.Owner = this;
+
+        }
+
+        //called by second window when user password is obtained
+        //upon that decryption can be performed
+        public void OnUserPasswordGiven(string password)
+        {
+
             // progress bar config
             BackgroundWorker worker = new BackgroundWorker();
             worker.WorkerReportsProgress = true;
@@ -262,19 +296,10 @@ namespace BSK1
             worker.DoWork += Worker_DoWorkDecryption;
             worker.ProgressChanged += Worker_ProgressChangedDecryption;
 
-
-            //get values from the user (from gui)
-            //todo setting global var recipent, inputfilepath and outputfilepath here
-            bool correctInput = GetSelectedValuesFromGUIDecryption(out inputFilePath, out outputFilePath, out recipent);
-            if (correctInput)
-            {
-                worker.RunWorkerAsync();
-
-            }
-            else
-            {
-                //TODO error message about incorrect input
-            }
+            //set obtained password
+            obtainedPassword = password;
+            //start decryption
+            worker.RunWorkerAsync();
 
         }
 
@@ -285,16 +310,17 @@ namespace BSK1
             {
                 User newUser = UsersManagement.AddUser(email, password);
                 users.Add(newUser);
+
+                //refresh all listboxes to show also newly added user
                 RecipentsListBox.ItemsSource = null;
                 RecipentsListBoxDecryption.ItemsSource = null;
                 RecipentsListViewRegister.ItemsSource = null;
-
 
                 RecipentsListBox.ItemsSource = users;
                 RecipentsListBoxDecryption.ItemsSource = users;
                 RecipentsListViewRegister.ItemsSource = users;
 
-                resultTextBlockRegister.Text = "Zostałeś zarejestrowany, dziękujemy ! Tak na prawde nie xd";
+                resultTextBlockRegister.Text = "Zostałeś zarejestrowany, dziękujemy!";
             }
             else
             {
@@ -344,7 +370,7 @@ namespace BSK1
             worker.ReportProgress(0);
             Decryption decryption = new Decryption(inputFilePath,
                 outputFilePath, recipent);
-            decryption.Decrypt(worker);
+            decryption.Decrypt(worker, obtainedPassword);
                
         }
 

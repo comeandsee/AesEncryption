@@ -30,10 +30,10 @@ namespace BSK1
         public Dictionary<string, string> RecipentsEmailSessionKey { get; set; }
         public byte[] IV { get; set; }
 
-        public void Decrypt(BackgroundWorker worker)
+        public void Decrypt(BackgroundWorker worker, string obtainedPassword)
         {
             long headerLengthInBytes = ManageHeader();
-            byte[] decryptedSessionKeyBytes = ManageRecipent();
+            byte[] decryptedSessionKeyBytes = ManageRecipent(obtainedPassword);
 
             try
             {
@@ -133,7 +133,7 @@ namespace BSK1
             }
         }
 
-        private byte[] ManageRecipent()
+        private byte[] ManageRecipent(string obtainedPassword)
         {
             //recipents are kept in a dictionary as 
             //<recipentEmail, encryptedUserSessionKey> pairs
@@ -165,7 +165,8 @@ namespace BSK1
             }
 
             //decrypt session key using user's private key
-            string userPrivateKeyString = UsersManagement.GetUserPrivateKeyFromFile(SelectedUser.Email);
+            string userPrivateKeyString = 
+                UsersManagement.GetUserPrivateKey(SelectedUser.Email, obtainedPassword);
             
             byte[] decryptedSessionKeyBytes = 
                 EncryptionHelper.DecryptSessionKeyFromString(encryptedSessionKeyString, userPrivateKeyString);

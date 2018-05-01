@@ -59,9 +59,17 @@
     <Compile Include="Encryption.cs" />
     <Compile Include="EncryptionHelper.cs" />
     <Compile Include="Globals.cs" />
+    <Compile Include="InsertPswrdWindow.xaml.cs">
+      <DependentUpon>InsertPswrdWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PasswordManager.cs" />
     <Compile Include="User.cs" />
     <Compile Include="UsersManagement.cs" />
     <Compile Include="XmlHelpers.cs" />
+    <Page Include="InsertPswrdWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

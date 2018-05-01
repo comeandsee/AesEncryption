@@ -104,9 +104,24 @@ namespace BSK1
             out Dictionary<string, string> recipents,
             out string fileExtension)
         {
+            recipents = new Dictionary<string, string>();
 
             XmlDocument doc = new XmlDocument();
-            doc.LoadXml(xmlHeaderString);
+            try
+            {
+                doc.LoadXml(xmlHeaderString);
+            }
+            catch (XmlException e)
+            {
+                Console.WriteLine("cannot read encrypted file");
+                fileExtension = "err";
+                blockSize = "err";
+                cipherMode = "err";
+                algorithm = "err";
+                iv = "err";
+                keySize = "err";
+                return;
+            }
 
             algorithm = doc.DocumentElement
                 .SelectSingleNode("/" + Globals.XmlMainElement + "/" + Globals.XmlAlgorithm).InnerText;
@@ -127,7 +142,6 @@ namespace BSK1
                 .SelectSingleNode("/" + Globals.XmlMainElement + "/" + Globals.XmlExtension).InnerText;
 
 
-            recipents = new Dictionary<string, string>();
             //todo maaybe check if there are any?
             string userEmail, encryptedUserSessionKey;
             XmlNode recipentsNode = doc.DocumentElement
@@ -139,10 +153,6 @@ namespace BSK1
                 recipents.Add(userEmail, encryptedUserSessionKey);
             }
         }
-
-        public static void ReadDecodedData(string filePath, long headerByteLength)
-        {
-
-        }
+        
     }
 }

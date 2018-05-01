@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -38,7 +39,7 @@ namespace BSK1
             if (!File.Exists(Globals.PublicKeysFilePath))
             {
                 Console.WriteLine("there are no users in the db");
-                return null;
+                return users;
             }
 
             doc.Load(Globals.PublicKeysFilePath);
@@ -49,7 +50,7 @@ namespace BSK1
             if (usersNode == null)
             {
                 Console.WriteLine("there is no users node");
-                return null;
+                return users;
             }
 
             //for each user
@@ -63,10 +64,24 @@ namespace BSK1
                 Console.WriteLine("added " + user.Email + ", key: " + user.publicRSAKey);
 
             }
-
+            
+            
             return users;
 
         }
+
+        public static string GetUserPrivateKey(string userEmail, string obtainedPassword)
+        {
+            string encryptedKey = GetUserPrivateKeyFromFile(userEmail);
+
+            byte[] encryptedKeyBytes = Convert.FromBase64String(encryptedKey);
+
+            string decryptedKeyString = DecryptPrivateKey(encryptedKeyBytes, obtainedPassword);
+
+            return decryptedKeyString;
+        }
+
+
 
         //getting the key from private.xml file
         //gets private key of user with userEmail
@@ -121,6 +136,10 @@ namespace BSK1
             EncryptionHelper.GenerateKeyPairRSA(out string publicKey, out string privateKey);
             //todo maaybe check if user already exists
 
+            //encrypt user private key with hash of their password
+            string encryptedPrivateKey = 
+                EncryptPrivateKey(privateKey, password);
+
             //add user to all xml files
             //pswrds(.xml): 
             //  <Users>
@@ -132,16 +151,70 @@ namespace BSK1
             //  </Users> 
             //private(.xml): 
             //  <Users>
-            //      <User><Email></Email><PrivateKey></PrivateKey></User>
+            //      <User><Email></Email><PrivateKey></PrivateKey></User> 
             //  </Users>  
+            //private.xml keeps encrypted private keys 
 
 
             AddUserToCorrectFile(email, password, Globals.PswrdsFilePath, Globals.XmlPassword);
             AddUserToCorrectFile(email, publicKey, Globals.PublicKeysFilePath, Globals.XmlPublicKey);
-            AddUserToCorrectFile(email, privateKey, Globals.PrivateKeysFilePath, Globals.XmlPrivateKey);
+            AddUserToCorrectFile(email, encryptedPrivateKey, Globals.PrivateKeysFilePath, Globals.XmlPrivateKey);
 
             return new User(email, publicKey);
 
+        }
+
+        //returns private key decrypted with AES algorithm in ECB mode
+        //using hashed password as a key
+        //password is hashed using SHA-1 algorithm
+        private static string DecryptPrivateKey(byte[] encryptedPrivateKey, string password)
+        {
+            byte[] hashedPassword = GetPasswordHash(password);
+
+            byte[] hashedPswrdWithPadding = new byte[256 / 8];
+            //fill array with 0's
+            Array.Clear(hashedPswrdWithPadding, 0, hashedPswrdWithPadding.Length);
+
+            hashedPassword.CopyTo(hashedPswrdWithPadding, 0);
+
+            //decrypt private key using AES in ECB mode and hashedPassword as a key
+            string decryptedPrivateKeyString =
+                PasswordManager.DecryptBytesAesECB(encryptedPrivateKey, hashedPswrdWithPadding);
+
+            return decryptedPrivateKeyString;
+        }
+
+
+        //returns private key encrypted with AES algorithm in ECB mode
+        //using hashed password as a key
+        //password is hashed using SHA-1 algorithm
+        private static string EncryptPrivateKey(string privateKey, string password)
+        {
+            byte[] hashedPassword = GetPasswordHash(password);
+
+            byte[] hashedPswrdWithPadding = new byte[256/8];
+            //fill array with 0's
+            Array.Clear(hashedPswrdWithPadding, 0, hashedPswrdWithPadding.Length);
+
+            hashedPassword.CopyTo(hashedPswrdWithPadding, 0);
+
+
+            //encrypt private key using AES in ECB mode and hashedPassword as a key
+            byte[] encryptedPrivateKeyBytes = 
+                PasswordManager.EncryptBytesAesECB(privateKey, hashedPswrdWithPadding);
+
+            string encryptedPrivateKeyString = Convert.ToBase64String(encryptedPrivateKeyBytes);
+            return encryptedPrivateKeyString;
+        }
+
+        //based on: https://msdn.microsoft.com/pl-pl/library/system.security.cryptography.sha1(v=vs.110).aspx
+        private static byte[] GetPasswordHash(string password)
+        {
+            //byte[] pswdBytes = Convert.FromBase64String(password);
+
+            SHA1 sha = new SHA1CryptoServiceProvider();
+            // This is one implementation of the abstract class SHA1.
+            return sha.ComputeHash(new MemoryStream(Encoding.UTF8.GetBytes(password)));
         }
 
         private static void AddUserToCorrectFile(string userEmail, string value, string filePath, string valueNodeName)
