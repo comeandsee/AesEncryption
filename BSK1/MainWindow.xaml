@@ -35,7 +35,6 @@
                     <ProgressBar x:Name="EncryptionProgressBar" x:FieldModifier="public" HorizontalAlignment="Left" Height="13" Margin="5,283,0,0" VerticalAlignment="Top" Width="100" />
                     <TextBlock Name="ProgressTextBlock" Text="Status: wybierz plik i dane do szyfrowania"  HorizontalAlignment="Left" Margin="5,301,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" RenderTransformOrigin="-1.238,3.744" Height="25" Width="341"/>
                     <TextBlock Name="resultTextBlock" Text=""  HorizontalAlignment="Left" Margin="38,283,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" RenderTransformOrigin="-1.238,3.744" Grid.ColumnSpan="3" Height="16" Width="65" Grid.Column="4"/>
-                    <TextBlock x:Name="ProgressTextBlock_Copy" Text="Status: wybierz plik i dane do szyfrowania"  HorizontalAlignment="Left" Margin="5,301,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" RenderTransformOrigin="-1.238,3.744" Height="25" Width="341"/>
 
                 </Grid>
 
