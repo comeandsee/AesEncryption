@@ -54,7 +54,6 @@ namespace BSK1
             {
                 try
                 {
-                    //todo this creates some xml's, get key values from it or change everything
                     publicKey = rsa.ToXmlString(false);
                     privateKey = rsa.ToXmlString(true);
 

@@ -58,7 +58,7 @@
                 </Grid>
             </TabItem>
 
-            <TabItem Header="Register" >
+            <TabItem Header="Rejestracja" >
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="118*"/>

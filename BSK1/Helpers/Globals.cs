@@ -9,7 +9,8 @@ namespace BSK1
     static class Globals
     {
 
-        public static String AppMainDirPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\CryptoVirus";
+        public static String AppMainDirPath = 
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\CryptoVirus";
         public static String PathToPrivateKeysDir = AppMainDirPath + "\\NotReallyPrivateKeys";
         public static String PswrdsFilePath = AppMainDirPath + "\\pswrds";
         public static String PublicKeysFilePath = AppMainDirPath + "\\public";
